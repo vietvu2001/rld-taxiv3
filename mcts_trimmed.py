@@ -1,6 +1,6 @@
-import numpy as np  # pylint: disable=import-error
+import numpy as np
 import random
-from gym import utils  # pylint: disable=import-error
+from gym import utils
 from io import StringIO
 import sys
 from contextlib import closing
@@ -8,14 +8,14 @@ import copy
 import math
 import csv
 
-import gym  # pylint: disable=import-error
+import gym
 import time
 import random
 from collections import deque
 
 from taxienv import TaxiEnv
 from qlearn import QAgent
-from termcolor import colored  # pylint: disable=import-error
+from termcolor import colored
 from heuristic import wall_interference, cell_frequency
 
 map = [
