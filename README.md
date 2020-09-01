@@ -1,6 +1,6 @@
 # Project
 
-This repository contains the code for my project, Three Methods for Reinforcement Learning Design.
+This repository contains the code for my project, Three Methods for Reinforcement Learning Design. We are using the Taxi-v3 environment in the empirical evaluation.
 
 # Packages to install
 - gym: provides text-based representation render through utils
