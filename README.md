@@ -26,3 +26,4 @@ This repository contains the code for my project, Three Methods for Reinforcemen
 4. MCTS trimmed by Path-based Heuristics
 - Run mcts_trimmed.py
 - The tree's contents will be stored into tree.csv, and the result into mcts_trimmed_result.txt
+- Default budget is 4. To change the budget size to N, replace 4 in line 30 (of mcts_trimmed.py) to N.
