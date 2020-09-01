@@ -9,3 +9,9 @@ This repository contains the code for my project, Three Methods for Reinforcemen
 - sklearn: provides the function train_test_split for separating training - testing data
 
 # Usage
+1. Supervised Learning
+- First, run allstates.py to store sampled data to data_3.csv
+- Then, run feed.py to train the ANN and return the result of this method in sl_result_4 (budget is 4).
+- Dynamic version (allowing dynamic budget changes) will be updated shortly.
+
+2. 
