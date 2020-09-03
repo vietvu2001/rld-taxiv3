@@ -1,3 +1,4 @@
+import os
 import csv
 import ast
 import numpy as np  # pylint: disable=import-error
@@ -63,7 +64,11 @@ def path_based(env, num_mods):
 
 num_mods = 1
 a = path_based(env, num_mods)
-with open("path_based_result_{}.txt".format(num_mods), "w") as file:
+r_dir = os.path.abspath(os.pardir)
+data_dir = os.path.join(r_dir, "data")
+file_dir = os.path.join(data_dir, "path_based_result_{}.txt".format(num_mods))
+
+with open(file_dir, "w") as file:
     file.write("Modifications: ")
     file.write(str(a[0]))
     file.write("\n")
