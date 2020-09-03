@@ -1,3 +1,5 @@
+import os
+
 import numpy as np  # pylint: disable=import-error
 import random
 from gym import utils  # pylint: disable=import-error
@@ -15,7 +17,6 @@ import ast
 from sklearn.model_selection import train_test_split  # pylint: disable=import-error
 from taxienv import TaxiEnv
 from qlearn import QAgent
-from image import map_to_colors
 import matplotlib.pyplot as plt  # pylint: disable=import-error
 from termcolor import colored  # pylint: disable=import-error
 import multiprocessing as mp
@@ -78,7 +79,7 @@ def qlearn_as_func(agent, env, number, agents, insert_position=-1):
 data = []
 
 if __name__ == "__main__":
-    rounds = 40
+    rounds = 5
     mp.set_start_method = "spawn"
     num_processes = 10
     processes = []
@@ -88,7 +89,7 @@ if __name__ == "__main__":
         agents.append(0)  # keeper
 
     categories = []
-    num_mods = 2
+    num_mods = 1
 
     for iter in range(rounds):
         print(colored("Data addition round {} begins!".format(iter), "red"))
@@ -113,7 +114,11 @@ if __name__ == "__main__":
         print(categories[i], agents[i].env.walls, agents[i].env.special)
         data.append((categories[i], ut))
 
-    with open("data_{}.csv".format(num_mods), "w") as file:
+    r_dir = os.path.abspath(os.pardir)
+    data_dir = os.path.join(r_dir, "data")
+    file_dir = os.path.join(data_dir, "data_{}.csv".format(num_mods))
+
+    with open(file_dir, "w") as file:
         fieldnames = ["vector", "average"]
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()

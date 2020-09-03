@@ -1,3 +1,5 @@
+import os
+
 import numpy as np  # pylint: disable=import-error
 import random
 from gym import utils  # pylint: disable=import-error
@@ -28,7 +30,7 @@ map = [
     "+---------+",
 ]
 
-max_layer = 4
+max_layer = 3
 
 
 def utility(agent):
@@ -299,7 +301,7 @@ class Tree():
                 walk.append(self.modifications[mod_index])
         
         if len(walk) < max_layer:
-            print("MCTS insufficient to get 4 modifications")
+            print("MCTS insufficient to get {} modifications".format(max_layer))
             return (walk, None)
 
         else:
@@ -327,8 +329,13 @@ map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 tree = Tree(env)
 tree.initialize()
-tree.ucb_search(iterations=1000)
-with open("tree_{}.csv".format(max_layer), "w", newline='') as file:
+tree.ucb_search(iterations=500)
+r_dir = os.path.abspath(os.pardir)
+data_dir = os.path.join(r_dir, "data")
+csv_dir = os.path.join(data_dir, "tree_trimmed_{}.csv".format(max_layer))
+txt_dir = os.path.join(data_dir, "mcts_trimmed_result_{}.txt".format(max_layer))
+
+with open(csv_dir, "w", newline='') as file:
     fieldnames = list(tree.info(0).keys())
     writer = csv.DictWriter(file, fieldnames=fieldnames)
 
@@ -338,7 +345,7 @@ with open("tree_{}.csv".format(max_layer), "w", newline='') as file:
 
 a = tree.greedy()
 
-with open("mcts_trimmed_result_{}.txt".format(max_layer), "w") as file:
+with open(txt_dir, "w") as file:
     file.write("Modifications: ")
     file.write(str(a[0]))
     file.write("\n")

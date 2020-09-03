@@ -1,3 +1,5 @@
+import os
+
 import numpy as np  # pylint: disable=import-error
 import random
 from gym import utils  # pylint: disable=import-error
@@ -15,7 +17,6 @@ import ast
 from sklearn.model_selection import train_test_split  # pylint: disable=import-error
 from taxienv import TaxiEnv
 from qlearn import QAgent
-from image import map_to_colors
 import matplotlib.pyplot as plt  # pylint: disable=import-error
 from termcolor import colored  # pylint: disable=import-error
 import multiprocessing as mp
@@ -36,7 +37,11 @@ env = TaxiEnv(map_to_numpy)  # reference environment
 input_data = []
 output_data = []
 
-with open("data_2.csv", "r") as file:
+r_dir = os.path.abspath(os.pardir)
+data_dir = os.path.join(r_dir, "data")
+file_dir = os.path.join(data_dir, "data_1.csv")
+
+with open(file_dir, "r") as file:
     reader = csv.DictReader(file)
     for row in reader:
         vector = ast.literal_eval(row['vector'])

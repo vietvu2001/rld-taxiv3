@@ -1,3 +1,5 @@
+import os
+
 import csv
 import ast
 import numpy as np  # pylint: disable=import-error
@@ -35,10 +37,14 @@ env = TaxiEnv(map_to_numpy)  # reference environment
 
 input_data = []
 output_data = []
-num_mods = 0
+num_mods = 1  # specify here
+
+r_dir = os.path.abspath(os.pardir)
+data_dir = os.path.join(r_dir, "data")
+file_dir = os.path.join(data_dir, "data_{}.csv".format(num_mods))
 
 # Read data
-with open("data_2.csv", "r") as f:
+with open(file_dir, "r") as f:
   reader = csv.DictReader(f)
   for row in reader:
     vector = ast.literal_eval(row['vector'])
@@ -237,7 +243,7 @@ def get_ordered_sequence(list, k):
         
     return res
 
-num_trials = int(scipy.special.binom(31, num_mods))
+num_trials = int(scipy.special.binom(len(modifications), num_mods))
 
 for i in range(num_trials):
     #seq = random.sample(modifications, k=4)
@@ -263,6 +269,9 @@ for element in range(len(h.array)):
         opt_val = rews
         opt_seq = seq
 
+r_dir = os.path.abspath(os.pardir)
+data_dir = os.path.join(r_dir, "data")
+file_dir = os.path.join(data_dir, "sl_result_{}.txt".format(num_mods))
 with open("sl_result_{}.txt".format(num_mods), "w") as file:
     file.write("Modifications: ")
     file.write(str(opt_seq))

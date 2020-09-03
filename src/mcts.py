@@ -1,3 +1,5 @@
+import os
+
 import numpy as np  # pylint: disable=import-error
 import random
 from gym import utils  # pylint: disable=import-error
@@ -27,7 +29,7 @@ map = [
     "+---------+",
 ]
 
-max_layer = 3
+max_layer = 1
 
 gamma = 1  # Discount factor for past rewards
 max_steps_per_episode = 3000
@@ -102,15 +104,6 @@ class Node():
 
     def get_available_modifications(self, tree):
         ls = []
-        '''for wall in self.env.walls:
-            mod_index = tree.modifications.index((0, wall[0], wall[1]))
-            ls.append(mod_index)
-        
-        for row in range(self.env.width):
-            for col in range(self.env.length):
-                if (row, col) not in self.env.special:
-                    mod_index = tree.modifications.index((1, row, col))
-                    ls.append(mod_index)'''
 
         max_mod = len(tree.modifications) + self.layer - max_layer
         if self.parent is None:
@@ -333,8 +326,13 @@ map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 tree = Tree(env)
 tree.initialize()
-tree.ucb_search(iterations=1000)
-with open("tree_{}.csv".format(max_layer), "w", newline='') as file:
+tree.ucb_search(iterations=50)
+r_dir = os.path.abspath(os.pardir)
+data_dir = os.path.join(r_dir, "data")
+csv_dir = os.path.join(data_dir, "tree_{}.csv".format(max_layer))
+txt_dir = os.path.join(data_dir, "mcts_result_{}.txt".format(max_layer))
+
+with open(csv_dir, "w", newline='') as file:
     fieldnames = list(tree.info(0).keys())
     writer = csv.DictWriter(file, fieldnames=fieldnames)
 
@@ -344,7 +342,7 @@ with open("tree_{}.csv".format(max_layer), "w", newline='') as file:
 
 a = tree.greedy()
 
-with open("mcts_result_{}.txt".format(max_layer), "w") as file:
+with open(txt_dir, "w") as file:
     file.write("Modifications: ")
     file.write(str(a[0]))
     file.write("\n")
