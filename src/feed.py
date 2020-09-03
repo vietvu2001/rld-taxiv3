@@ -272,7 +272,7 @@ for element in range(len(h.array)):
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
 file_dir = os.path.join(data_dir, "sl_result_{}.txt".format(num_mods))
-with open("sl_result_{}.txt".format(num_mods), "w") as file:
+with open(file_dir, "w") as file:
     file.write("Modifications: ")
     file.write(str(opt_seq))
     file.write("\n")

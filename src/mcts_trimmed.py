@@ -154,7 +154,7 @@ class Tree():
         
         self.num_nodes = 0
         self.root = None
-        self.threshold = 9
+        self.threshold = 8.5
 
 
     def scale(self, x):
@@ -329,7 +329,7 @@ map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 tree = Tree(env)
 tree.initialize()
-tree.ucb_search(iterations=500)
+tree.ucb_search(iterations=700)
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
 csv_dir = os.path.join(data_dir, "tree_trimmed_{}.csv".format(max_layer))
