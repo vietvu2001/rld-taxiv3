@@ -30,7 +30,7 @@ map = [
     "+---------+",
 ]
 
-max_layer = 5
+max_layer = 6
 
 
 def utility(agent):
@@ -41,6 +41,7 @@ def utility(agent):
         rewards.append(r)
 
     return np.mean(rewards)
+
 
 def make_env(env, mod_seq):
     ref_env = copy.deepcopy(env)
@@ -154,7 +155,7 @@ class Tree():
         
         self.num_nodes = 0
         self.root = None
-        self.threshold = 9.5
+        self.threshold = 9.75
 
 
     def scale(self, x):
@@ -329,7 +330,7 @@ map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 tree = Tree(env)
 tree.initialize()
-tree.ucb_search(iterations=1500)
+tree.ucb_search(iterations=3000)
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
 csv_dir = os.path.join(data_dir, "tree_trimmed_{}.csv".format(max_layer))
