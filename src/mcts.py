@@ -29,7 +29,7 @@ map = [
     "+---------+",
 ]
 
-max_layer = 1
+max_layer = 5
 
 gamma = 1  # Discount factor for past rewards
 max_steps_per_episode = 3000
@@ -151,7 +151,7 @@ class Tree():
         
         self.num_nodes = 0
         self.root = None
-        self.threshold = 8
+        self.threshold = 9
 
 
     def scale(self, x):
@@ -326,7 +326,7 @@ map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 tree = Tree(env)
 tree.initialize()
-tree.ucb_search(iterations=50)
+tree.ucb_search(iterations=2500)
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
 csv_dir = os.path.join(data_dir, "tree_{}.csv".format(max_layer))
