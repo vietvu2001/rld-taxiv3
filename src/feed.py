@@ -37,7 +37,7 @@ env = TaxiEnv(map_to_numpy)  # reference environment
 
 input_data = []
 output_data = []
-num_mods = 1  # specify here
+num_mods = 5  # specify here
 
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
@@ -69,13 +69,13 @@ model.add(Dense(64, activation="relu"))
 model.add(Dropout(0.5))
 model.add(Dense(1))
 
-model.compile(optimizer=Adam(learning_rate=0.001), loss = 'mae')
+model.compile(optimizer=Adam(learning_rate=0.002), loss = 'mae')
 
 # Training
 TEST_SIZE = 0.2
 x_train, x_test, y_train, y_test = train_test_split(np.array(input_data), np.array(output_data), test_size=TEST_SIZE)
 
-model.fit(x_train, y_train, epochs=500)
+model.fit(x_train, y_train, epochs=400)
 model.evaluate(x_test, y_test, verbose=2)
 
 class Heap():
@@ -243,7 +243,7 @@ def get_ordered_sequence(list, k):
         
     return res
 
-num_trials = int(scipy.special.binom(len(modifications), num_mods))
+num_trials = min(int(scipy.special.binom(len(modifications), num_mods)), 50000)
 
 for i in range(num_trials):
     #seq = random.sample(modifications, k=4)
@@ -255,7 +255,8 @@ for i in range(num_trials):
     if val > h.peek():
         h.insert(seq)
     
-    print(i)
+    if i % 100 == 0:
+        print(i)
 
 opt_seq = None
 opt_val = -1

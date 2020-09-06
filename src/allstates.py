@@ -79,7 +79,7 @@ def qlearn_as_func(agent, env, number, agents, insert_position=-1):
 data = []
 
 if __name__ == "__main__":
-    rounds = 5
+    rounds = 750
     mp.set_start_method = "spawn"
     num_processes = 10
     processes = []
@@ -89,7 +89,7 @@ if __name__ == "__main__":
         agents.append(0)  # keeper
 
     categories = []
-    num_mods = 1
+    num_mods = 5
 
     for iter in range(rounds):
         print(colored("Data addition round {} begins!".format(iter), "red"))
@@ -111,7 +111,6 @@ if __name__ == "__main__":
     
     for i in range(len(agents)):
         ut = utility(agents[i])
-        print(categories[i], agents[i].env.walls, agents[i].env.special)
         data.append((categories[i], ut))
 
     r_dir = os.path.abspath(os.pardir)
