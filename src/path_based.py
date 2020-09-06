@@ -62,7 +62,7 @@ def path_based(env, num_mods):
 
     return (opt_seq, opt_val)
 
-num_mods = 1
+num_mods = 6
 a = path_based(env, num_mods)
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
