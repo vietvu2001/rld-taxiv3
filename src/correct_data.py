@@ -39,7 +39,7 @@ output_data = []
 
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
-file_dir = os.path.join(data_dir, "data_1.csv")
+file_dir = os.path.join(data_dir, "data_6.csv")
 
 with open(file_dir, "r") as file:
     reader = csv.DictReader(file)
@@ -79,5 +79,5 @@ def check(input_data, index, output_data):
     rews = utility(agent)
     return (rews == output_data[index])
 
-for i in range(10):
+for i in range(20):
     print(check(input_data, i, output_data))
