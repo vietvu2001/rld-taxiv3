@@ -37,7 +37,7 @@ env = TaxiEnv(map_to_numpy)  # reference environment
 
 input_data = []
 output_data = []
-num_mods = 5  # specify here
+num_mods = 6  # specify here
 
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
@@ -243,7 +243,13 @@ def get_ordered_sequence(list, k):
         
     return res
 
-num_trials = min(int(scipy.special.binom(len(modifications), num_mods)), 50000)
+
+if num_mods == 6:
+    num_trials = min(int(scipy.special.binom(len(modifications), num_mods)), 100000)
+
+else:
+    num_trials = min(int(scipy.special.binom(len(modifications), num_mods)), 50000)
+
 
 for i in range(num_trials):
     #seq = random.sample(modifications, k=4)
