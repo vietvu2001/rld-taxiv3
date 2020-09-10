@@ -38,7 +38,7 @@ env = TaxiEnv(map_to_numpy)  # reference environment
 
 input_data = []
 output_data = []
-num_mods = 4  # specify here
+num_mods = 5  # specify here
 
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")

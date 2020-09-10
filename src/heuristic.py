@@ -151,7 +151,3 @@ def wall_interference(agent):
     
     dict_return = sorted(dict_return.items(), key=lambda x: -x[1])
     return dict_return
-
-'''agent = QAgent(env)
-agent.qlearn(600, render=False)
-print(cell_frequency(agent))'''
