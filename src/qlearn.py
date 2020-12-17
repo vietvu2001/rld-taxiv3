@@ -49,20 +49,27 @@ class QAgent():
         if action not in self.actions(state):
             raise ValueError
 
-        if (state, action) not in self.q:
+        if state not in self.q:
             return 0
+
+        elif action not in self.q[state]:
+            return 0
+
         else:
-            return self.q[(state, action)]
+            return self.q[state][action]
 
 
     def best_reward_state(self, state):
         opt = float("-inf")
         ls = self.actions(state)
 
+        if state not in self.q:
+            return 0
+
         for a in ls:
-            if (state, a) in self.q:
-                if self.q[(state, a)] > opt:
-                    opt = self.q[(state, a)]
+            if a in self.q[state]:
+                if self.q[state][a] > opt:
+                    opt = self.q[state][a]
             else:
                 if opt < 0:  # if (state, a) not in self.q, we default a q-value of 0
                     opt = 0
@@ -95,7 +102,7 @@ class QAgent():
     def qlearn(self, num_episodes, show=True, number=None, render=True):
 
         for i in range(num_episodes):
-            if show and i % 10 == 0 or i == num_episodes - 1:
+            if show and i % 100 == 0 or i == num_episodes - 1:
                 if number is None:
                     print("Episode {} begins!".format(i))
                 else:
@@ -112,7 +119,10 @@ class QAgent():
                 old_q = self.get_q_value(s, action)
 
                 # Update q-value
-                self.q[(s, action)] = old_q + self.alpha * (reward + self.rate * future_rewards_estimated - old_q)
+                if s not in self.q:
+                    self.q[s] = {}
+
+                self.q[s][action] = old_q + self.alpha * (reward + self.rate * future_rewards_estimated - old_q)
 
                 s = s_next
                 if done:
@@ -120,7 +130,7 @@ class QAgent():
 
                 t += 1
 
-            if show and i % 10 == 0 or i == num_episodes - 1:
+            if show and i % 100 == 0 or i == num_episodes - 1:
                 if number is None:
                     print("Episode {} done ({})!".format(i, t))
                 else:
@@ -163,19 +173,22 @@ class QAgent():
             self.env.render()
         return [steps, total, states]
 
+    def print_eval_result(self, output):
+        # Print results from evaluation for visualization
+        print("Steps taken: {}".format(output[0]))
+        print("Total reward: {}".format(output[1]))
+        print("States traversed: {}".format(output[2]))
 
-'''map_to_numpy = np.asarray(map, dtype='c')
+        return
+
+
+map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 agent = QAgent(env)
 start = time.time()
-agent.qlearn(600)
+agent.qlearn(650)
 end = time.time()
-print(end - start)
-starting_points = []
-for i in range(25):
-    env.reset()
-    starting_points.append(env.current)
 
-print(starting_points)
-for i in range(2):
-    print(agent.eval(fixed=223))'''
+res = agent.eval(show=True)
+agent.print_eval_result(res)
+print(end - start)
