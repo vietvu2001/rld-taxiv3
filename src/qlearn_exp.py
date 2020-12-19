@@ -4,6 +4,7 @@ import ast
 import numpy as np  # pylint: disable=import-error
 import copy
 import random
+import time
 from collections import deque
 from taxienv import TaxiEnv
 from qlearn import QAgent
@@ -51,7 +52,10 @@ def connected_qlearn(agent, new_env, num_episodes):
     return linked_agent
 
 # Trial run
+start = time.time()
 linked_agent = connected_qlearn(agent, modified, 200)
+end = time.time()
+
 series = modified.resettable_states()
 l_vals = []
 
@@ -61,15 +65,4 @@ for state in series:
 
 l_vals = np.array(l_vals)
 
-new_agent = QAgent(modified)
-new_agent.qlearn(700, show=False, render=False)
-n_vals = []
-
-for state in series:
-    res = new_agent.eval(show=False, fixed=state)
-    n_vals.append(res[1])
-
-n_vals = np.array(n_vals)
-
-a = np.linalg.norm(l_vals - n_vals) ** 2
-print(a)
+print(end - start)
