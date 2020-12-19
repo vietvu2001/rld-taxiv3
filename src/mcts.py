@@ -36,6 +36,11 @@ max_steps_per_episode = 3000
 eps = 1e-6
 
 def utility(agent):
+    # Mean of rewards coming from every resettable state
+    # Parameters
+    # ===================================================
+    # agent: pre-trained q-learning agent
+    # ===================================================
     rewards = []
     starts = agent.env.resettable_states()
     for point in starts:
@@ -44,7 +49,14 @@ def utility(agent):
 
     return np.mean(rewards)
 
+
 def make_env(env, mod_seq):
+    # Make a new environment from reference original environment and a modification sequence
+    # Parameters
+    # ====================================================
+    # env: original environment
+    # mod_seq: modification sequence. As in list of 3-tuples (where first entry is indicator variable of special cell)
+    # ====================================================
     ref_env = copy.deepcopy(env)
     locations = mod_seq
     for element in locations:
@@ -78,34 +90,58 @@ class Node():
 
 
     def update_walls_special(self, tree, parent_bool):
+        # There is a list of all possible modifications, called tree.modifications (stored in the MCTS tree)
+        # This function updates the environment attributes of the node (remaining walls, special cells)
+
+        # Parameters
+        # ===========================================
+        # self: the node
+        # tree: the tree this node belongs to
+        # parent_bool: whether this node is the root of the tree. boolean variable
+        # ===========================================
+
         if not parent_bool: 
-            return
+            return  # the root has no modification
 
         parent_env = copy.deepcopy(tree.nodes[self.parent].env)
         self.env = parent_env
-        if tree.modifications[self.modification][0] == 0:  # wall
+
+        if tree.modifications[self.modification][0] == 0:  # wall, use transition function
             assert tuple(tree.modifications[self.modification][1 : 3]) in self.env.walls
-            #self.env.walls.remove(tree.modifications[self.modification][1])
             wall = tuple(tree.modifications[self.modification][1 : 3])
             self.env = self.env.transition([wall])
-        elif tree.modifications[self.modification][0] == 1:  # cell
+
+        elif tree.modifications[self.modification][0] == 1:  # cell, use append to special list
             assert tuple(tree.modifications[self.modification][1 : 3]) not in self.env.special
             cell = tuple(tree.modifications[self.modification][1 : 3])
             self.env.special.append(cell)
 
 
     def update_layer(self, tree):
-        if self.parent is None:
+        # This function finds out the layer of the node in the MCTS tree (after appending)
+
+        if self.parent is None:  # or the root
             self.layer = 0
-        else:
+
+        else:  # it has a parent, so layer is the increment of parent's layer
             parent_layer = tree.nodes[self.parent].layer
             self.layer = parent_layer + 1
 
 
     def get_available_modifications(self, tree):
+        # Get the available modifications immediately succeeding the node "self" in the tree
+        # The idea here is that since every permutation of the modification sequence leads to the same utility of the agent
+        # We should only accept only one configuration, here we are ordering the modification sequence by index
+        # For example, (1, 15, 16, 19)
         ls = []
 
+        # Maximum index from a node: if the node in on layer i, then it has only (max layer - i) more layers below it
+        # Every layer means a modification (a path from that node), so the maximum index is bounded from above
+        # For example, a node on layer 1 cannot have modification index 31, because it cannot increase as it goes down path
+        # List is increasing so lower bound is the modification index of node + 1
+
         max_mod = len(tree.modifications) + self.layer - max_layer
+        
         if self.parent is None:
             min_mod = 0
         
@@ -119,8 +155,11 @@ class Node():
 
 
     def get_unused_modifications(self, tree):
+        # A node has many possible modifications succeeding it on the tree (next layer following node)
+        # This function finds out the modifications that are still unused (unvisited children)
         ls = self.get_available_modifications(tree)
-        ls_ret = ls
+        ls_ret = copy.deepcopy(ls)
+
         for index in self.visited_children:
             mod_index = tree.nodes[index].modification
             ls_ret.remove(mod_index)
@@ -143,6 +182,8 @@ class Tree():
         self.modifications = []
         self.counter = 0
         self.nodes = []
+        
+        # List of all possible modifications: tree.modifications
         for wall in env.walls:
             self.modifications.append((0, wall[0], wall[1]))
         for row in range(env.width):
@@ -155,6 +196,7 @@ class Tree():
 
 
     def scale(self, x):
+        # Scale the utility of the agent for backpropagation
         return max(0, x - self.threshold)
 
 
@@ -326,8 +368,10 @@ map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 tree = Tree(env)
 tree.initialize()
-tree.ucb_search(iterations=3000)
-r_dir = os.path.abspath(os.pardir)
+tree.ucb_search(iterations=2)
+
+# Store data
+'''r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
 csv_dir = os.path.join(data_dir, "tree_{}.csv".format(max_layer))
 txt_dir = os.path.join(data_dir, "mcts_result_{}.txt".format(max_layer))
@@ -350,6 +394,6 @@ with open(txt_dir, "w") as file:
     if a[1] is not None:
         file.write(str(a[1]))
     else:
-        file.write("Utility not available")
+        file.write("Utility not available")'''
 
-print(tree.modifications)
+print(tree.root.layer)
