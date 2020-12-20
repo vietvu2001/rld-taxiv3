@@ -28,7 +28,7 @@ map = [
 class QAgent():
     def __init__(self, env):
         self.env = env
-        self.alpha = 0.15
+        self.alpha = 0.25
         self.epsilon = 1
         self.rate = 1
         self.q = {}
@@ -78,7 +78,6 @@ class QAgent():
 
 
     def choose_action(self, state, prob = True):
-
         values = [0, 1]
         probs = [self.epsilon, 1 - self.epsilon]
         rand = random.choices(values, probs)
@@ -102,7 +101,7 @@ class QAgent():
     def qlearn(self, num_episodes, show=True, number=None, render=True):
 
         for i in range(num_episodes):
-            if show and i % 100 == 0 or i == num_episodes - 1:
+            if show and (i % 100 == 0 or i == num_episodes - 1):
                 if number is None:
                     print("Episode {} begins!".format(i))
                 else:
@@ -111,7 +110,7 @@ class QAgent():
             s = self.env.reset()
             t = 0
 
-            while True and t < 3000:
+            while True and t < 800:
                 action = self.choose_action(s)
                 s_next, reward, done = self.env.step(action)
 
@@ -130,7 +129,7 @@ class QAgent():
 
                 t += 1
 
-            if show and i % 100 == 0 or i == num_episodes - 1:
+            if show and (i % 100 == 0 or i == num_episodes - 1):
                 if number is None:
                     print("Episode {} done ({})!".format(i, t))
                 else:
@@ -173,6 +172,7 @@ class QAgent():
             self.env.render()
         return [steps, total, states]
 
+
     def print_eval_result(self, output):
         # Print results from evaluation for visualization
         print("Steps taken: {}".format(output[0]))
@@ -182,13 +182,20 @@ class QAgent():
         return
 
 
-map_to_numpy = np.asarray(map, dtype='c')
+'''map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 agent = QAgent(env)
+agent.epsilon = 0
 start = time.time()
-agent.qlearn(650)
+agent.qlearn(700)
 end = time.time()
 
-res = agent.eval(show=True)
-agent.print_eval_result(res)
-print(end - start)
+series = env.resettable_states()
+vals = []
+
+for state in series:
+    res = agent.eval(fixed=state, show=True)
+    vals.append(res[1])
+
+print(vals)
+print(end - start)'''
