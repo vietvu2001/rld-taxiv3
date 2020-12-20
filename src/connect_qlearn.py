@@ -21,17 +21,6 @@ map = [
     "+---------+",
 ]
 
-map_to_numpy = np.asarray(map, dtype="c")
-env = TaxiEnv(map_to_numpy)  # reference environment
-
-# Changing environments
-modified = env.transition([(1, 4), (5, 2), (5, 6)])
-modified.special.append((1, 1))
-modified.special.append((3, 3))
-
-agent = QAgent(env)
-agent.qlearn(700, show=False, render=False)
-
 
 def connected_qlearn(agent, new_env, num_episodes):
     # Parameters
@@ -46,23 +35,29 @@ def connected_qlearn(agent, new_env, num_episodes):
     linked_agent = QAgent(new_env)
     linked_agent.q = copy.deepcopy(agent.q)  # linking the q-values together
 
-    linked_agent.epsilon = 0.75  # encouraging exploration
+    linked_agent.epsilon = 0.75  # extremely encouraging exploration
     linked_agent.qlearn(num_episodes, show=False, render=False)
 
     return linked_agent
 
-# Trial run
+
+'''map_to_numpy = np.asarray(map, dtype="c")
+env = TaxiEnv(map_to_numpy)  # reference environment
+ref = copy.deepcopy(env)
+
+# Reference environment
+
+ref = ref.transition([(1, 4), (2, 4)])
+ref.special.append((3, 3))
+ref.special.append((4, 2))
+
+modified = ref.transition([(5, 6)])
+
+agent = QAgent(ref)
+agent.qlearn(700)
+
 start = time.time()
-linked_agent = connected_qlearn(agent, modified, 200)
+linked_agent = connected_qlearn(agent, modified, 250)
 end = time.time()
 
-series = modified.resettable_states()
-l_vals = []
-
-for state in series:
-    res = linked_agent.eval(show=False, fixed=state)
-    l_vals.append(res[1])
-
-l_vals = np.array(l_vals)
-
-print(end - start)
+print(end - start)'''
