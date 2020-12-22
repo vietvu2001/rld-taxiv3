@@ -23,20 +23,17 @@ map = [
 
 map_to_numpy = np.asarray(map, dtype="c")
 env = TaxiEnv(map_to_numpy)  # reference environment
-ref = copy.deepcopy(env)
+modified = copy.deepcopy(env)
 
 # Reference environment
 
-ref = ref.transition([(1, 4), (2, 4)])
-ref.special.append((3, 3))
-ref.special.append((4, 2))
-
-modified = ref.transition([(5, 6)])
+modified = modified.transition([(1, 4)])
+modified.special.append((2, 1))
 
 # Design experiment
-N = 100
+N = 10
 
-def potency(agent, modified, num_episodes):
+def potency(mutual_ls, agent, modified, num_episodes, index):
     # This function tests the potency of the connected q-learning paradigm.
     # Parameters
     # ==============================================
@@ -65,24 +62,29 @@ def potency(agent, modified, num_episodes):
     l_vals = np.array(l_vals)
     n_vals = np.array(n_vals)
 
-    a = np.linalg.norm(l_vals - n_vals)
-    print(a)
+    a = abs(np.sum(l_vals) - np.sum(n_vals))
+    
+    mutual_ls[index] = a
 
 
 if __name__ == "__main__":
     processes = []
     mp.set_start_method = "spawn"
     num_processes = 10
+    manager = Manager()
+    mutual = manager.list()
 
+    for _ in range(N * num_processes):
+        mutual.append(0)
     
     # Create default agent
-    agent = QAgent(ref)
+    agent = QAgent(env)
     agent.qlearn(650)
 
 
     for iter in range(N):
         for i in range(num_processes):
-            p = mp.Process(target=potency, args=(agent, modified, 300))
+            p = mp.Process(target=potency, args=(mutual, agent, modified, 400, i + iter * num_processes))
             p.start()
             processes.append(p)
 
@@ -91,3 +93,6 @@ if __name__ == "__main__":
 
         for process in processes:
             process.terminate()
+
+    print(np.mean(mutual))
+    print(mutual)
