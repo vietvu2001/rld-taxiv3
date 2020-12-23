@@ -31,7 +31,7 @@ map = [
     "+---------+",
 ]
 
-max_layer = 3
+max_layer = 5
 
 
 def utility(agent):
@@ -156,7 +156,7 @@ class Tree():
         
         self.num_nodes = 0
         self.root = None
-        self.threshold = 8
+        self.threshold = 9
 
         self.agent = QAgent(self.env)
         self.agent.qlearn(500, show=False, render=False)
@@ -244,7 +244,7 @@ class Tree():
                 simulate_env.special.append((mod[1], mod[2]))
         
         # Training
-        agent = connected_qlearn(self.agent, simulate_env, 400)
+        agent = connected_qlearn(self.agent, simulate_env, 425)
         reward = utility(agent)
 
         if reward > self.threshold:
@@ -334,7 +334,7 @@ map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 tree = Tree(env)
 tree.initialize()
-tree.ucb_search(iterations=1000)
+tree.ucb_search(iterations=2500)
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
 csv_dir = os.path.join(data_dir, "tree_trimmed_{}.csv".format(max_layer))
@@ -351,5 +351,3 @@ with open(txt_dir, "w") as file:
         file.write(str(a[1]))
     else:
         file.write("Utility not available")
-
-print(tree.modifications)
