@@ -184,8 +184,13 @@ class QAgent():
 
 '''map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
-agent = QAgent(env)
-agent.epsilon = 0
+
+modified = env.transition([(1, 4), (5, 2), (4, 2)])
+modified.special.append((1, 2))
+modified.special.append((2, 4))
+
+
+agent = QAgent(modified)
 start = time.time()
 agent.qlearn(700)
 end = time.time()
@@ -197,5 +202,19 @@ for state in series:
     res = agent.eval(fixed=state, show=True)
     vals.append(res[1])
 
-print(vals)
-print(end - start)'''
+# Agent with less training
+new_agent = QAgent(modified)
+start = time.time()
+new_agent.qlearn(600, show=False, render=False)
+end = time.time()
+
+series = env.resettable_states()
+n_vals = []
+
+for state in series:
+    res = new_agent.eval(fixed=state, show=False)
+    n_vals.append(res[1])
+
+a = sum(n_vals) - sum(vals)
+
+print(a)'''
