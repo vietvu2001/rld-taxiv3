@@ -205,6 +205,7 @@ class TaxiEnv():
                 alternate.desc[wall[0]][wall[1]] = b":"
                 alternate.walls.remove(wall)
             return alternate
+            
         else:
             alternate = copy.deepcopy(self)
             for wall in walls_to_cut:

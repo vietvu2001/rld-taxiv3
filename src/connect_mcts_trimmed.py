@@ -31,7 +31,7 @@ map = [
     "+---------+",
 ]
 
-max_layer = 5
+max_layer = 6
 
 
 def utility(agent):
@@ -156,7 +156,7 @@ class Tree():
         
         self.num_nodes = 0
         self.root = None
-        self.threshold = 9
+        self.threshold = 9.25
 
         self.agent = QAgent(self.env)
         self.agent.qlearn(500, show=False, render=False)
@@ -334,7 +334,7 @@ map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 tree = Tree(env)
 tree.initialize()
-tree.ucb_search(iterations=2500)
+tree.ucb_search(iterations=3500)
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
 csv_dir = os.path.join(data_dir, "tree_trimmed_{}.csv".format(max_layer))

@@ -30,7 +30,7 @@ map = [
     "+---------+",
 ]
 
-max_layer = 4
+max_layer = 6
 
 gamma = 1  # Discount factor for past rewards
 max_steps_per_episode = 3000
@@ -193,7 +193,7 @@ class Tree():
         
         self.num_nodes = 0
         self.root = None
-        self.threshold = 8.5
+        self.threshold = 9.25
 
         # Train original agent
         self.agent = QAgent(self.env)
@@ -423,7 +423,7 @@ map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 tree = Tree(env)
 tree.initialize()
-tree.ucb_search(iterations=2000)
+tree.ucb_search(iterations=3500)
 
 # Store data
 r_dir = os.path.abspath(os.pardir)

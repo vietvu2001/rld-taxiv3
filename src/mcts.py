@@ -135,7 +135,7 @@ class Node():
         # For example, (1, 15, 16, 19)
         ls = []
 
-        # Maximum index from a node: if the node in on layer i, then it has only (max layer - i) more layers below it
+        # Maximum index from a node: if the node is on layer i, then it has only (max layer - i) more layers below it
         # Every layer means a modification (a path from that node), so the maximum index is bounded from above
         # For example, a node on layer 1 cannot have modification index 31, because it cannot increase as it goes down path
         # List is increasing so lower bound is the modification index of node + 1
@@ -201,46 +201,88 @@ class Tree():
 
 
     def initialize(self):
+        # Initialize the tree with the root
+        # Assert that the tree is null (no root beforehand)
         assert self.root == None
+
+        # Create root
         root = Node(None, self.num_nodes, None, self.env)
+
+        # Add root to the list of nodes of the tree and increase the number of nodes 
         self.nodes.append(root)
         self.num_nodes += 1
+
+        # Assign the root to the root field of the tree
         self.root = root
+
+        # Update the environment configuration of the root
         self.root.update_walls_special(self, parent_bool=False)
+
+        # Update the layer of the root (the tree's version)
         self.root.update_layer(self)
 
 
     def add_node(self, mod_index, parent_index):
+        # This function adds a node with a modification index and a parent index into the MCTS tree.
         assert parent_index < self.num_nodes
         assert mod_index in self.nodes[parent_index].get_unused_modifications(self)
+
+        # Create a node from the modification index (in tree.modifications) and the parent index on the tree
         node = Node(mod_index, self.num_nodes, parent_index, self.env)
+
+        # Append the node to the list of nodes of the tree and increase the number of nodes
         self.nodes.append(node)
         self.num_nodes += 1
+
+        # Changing the boolean leaf status of the parent_index to False. 
         self.nodes[parent_index].leaf = False
+
+        # Update the layer of the newly added node
         self.nodes[node.index].update_layer(self)
+
+        # Update the environment configuration of the newly added node
         self.nodes[node.index].update_walls_special(self, parent_bool=True)
+
+        # Mark the newly added node as a visited child, with respect to its parent node
         self.nodes[parent_index].visited_children.append(node.index)
+
+        # Return the node as output
         return self.nodes[node.index]
 
 
     def expand(self, node_index):  # return index of an expanded node
-        assert self.num_nodes > node_index
+        # Get the list of unused modifications on the node (given by the tree and the node index)
         ls = self.nodes[node_index].get_unused_modifications(self)
-        assert len(ls) > 0  # still have an unvisited child
+
+        # Assert that the node still has unvisited children
+        assert len(ls) > 0
+
+        # Choose a random modification index from this list
         mod_index = random.choice(ls)
+
+        # Add the node of this modification index into the tree
         node = self.add_node(mod_index, node_index)
+
+        # Return the index of this newly created node as output
         return node.index
 
 
-    def best_child(self, node_index, const, const_2=1, expanded=True):  # return index of best child according to ucb heuristic
+    def best_child(self, node_index, const, const_2=1, expanded=True):
+        # Find the best child of a node based on the UCB heuristic
+        # If node is not fully expanded, use the heuristic only on visited children
         assert self.num_nodes > node_index
         ls = self.nodes[node_index].get_unused_modifications(self)
+
+        # If expanded boolean is True, the length of unused modifications list must be 0
         if expanded:
             assert len(ls) == 0
 
+        # Find the best child with largest UCB value
         opt = float("-inf")
         child = None
         for c in self.nodes[node_index].visited_children:
+            # Calculate the term for child c
+            
             scaled_reward = self.nodes[c].sum_reward / self.nodes[c].count
             exploration_term = const * math.sqrt(2 * math.log(self.nodes[node_index].count) / self.nodes[c].count)
             extra = 0
@@ -248,6 +290,8 @@ class Tree():
                 extra = const_2 * math.sqrt(np.var(self.nodes[c].simulation_history) + 1 / self.nodes[c].count)
 
             result = scaled_reward + exploration_term + extra  # Schadd SP-MCTS added term
+
+            # Compare to running maximum
             if result > opt:
                 opt = result
                 child = c
@@ -368,10 +412,10 @@ map_to_numpy = np.asarray(map, dtype='c')
 env = TaxiEnv(map_to_numpy)
 tree = Tree(env)
 tree.initialize()
-tree.ucb_search(iterations=2)
+tree.ucb_search(iterations=3000)
 
 # Store data
-'''r_dir = os.path.abspath(os.pardir)
+r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
 csv_dir = os.path.join(data_dir, "tree_{}.csv".format(max_layer))
 txt_dir = os.path.join(data_dir, "mcts_result_{}.txt".format(max_layer))
@@ -394,6 +438,4 @@ with open(txt_dir, "w") as file:
     if a[1] is not None:
         file.write(str(a[1]))
     else:
-        file.write("Utility not available")'''
-
-print(tree.root.layer)
+        file.write("Utility not available")

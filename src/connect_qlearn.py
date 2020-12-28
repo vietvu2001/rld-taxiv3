@@ -35,8 +35,8 @@ def connected_qlearn(agent, new_env, num_episodes):
     linked_agent = QAgent(new_env)
     linked_agent.q = copy.deepcopy(agent.q)  # linking the q-values together
 
-    linked_agent.epsilon = 0.75  # extremely encouraging exploration
-    linked_agent.qlearn(num_episodes, show=False, render=False)
+    linked_agent.epsilon = 0.75
+    linked_agent.qlearn(num_episodes, render=False)
 
     return linked_agent
 
