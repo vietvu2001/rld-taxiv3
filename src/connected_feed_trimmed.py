@@ -38,7 +38,7 @@ env = TaxiEnv(map_to_numpy)  # reference environment
 
 input_data = []
 output_data = []
-num_mods = 4  # specify here
+num_mods = 6  # specify here
 
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
@@ -272,10 +272,9 @@ N = int(scipy.special.binom(len(modifications), num_mods))
 
 
 if num_mods == 6:
-    num_trials = min(2 * N, 400000)
+    num_trials = int(2e+6)
 
 else:
-    num_trials = min(2 * N, 200000)
     num_trials = int(1e+6)
 
 # Initialize and build heap
