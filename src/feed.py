@@ -276,7 +276,7 @@ else:
     num_trials = int(1e+6)
 
 # Initialize and build heap
-sz = min(8 * num_mods, len(x_test))
+sz = min(12 * num_mods, len(x_test))
 h = Heap(model, x_test[0 : sz], sz)
 h.build_heap()
 
