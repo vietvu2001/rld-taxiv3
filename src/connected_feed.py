@@ -38,7 +38,7 @@ env = TaxiEnv(map_to_numpy)  # reference environment
 
 input_data = []
 output_data = []
-num_mods = 6  # specify here
+num_mods = 5  # specify here
 
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data")
@@ -62,15 +62,14 @@ print(num_mods == shape_tuple[0] // 3)
 # Build model
 model = Sequential()
 model.add(Dense(32, input_shape=(num_mods * 3, ), activation="relu"))
-model.add(Dense(64, activation="relu"))
+model.add(Dense(128, activation="relu"))
+model.add(BatchNormalization())
+model.add(Dense(256, activation="relu"))
 model.add(BatchNormalization())
 model.add(Dense(64, activation="relu"))
-model.add(BatchNormalization())
-model.add(Dense(32, activation="relu"))
-model.add(Dropout(0.3))
 model.add(Dense(1))
 
-model.compile(optimizer=Adam(learning_rate=0.0005), loss = 'mae')
+model.compile(optimizer=Adam(learning_rate=0.001), loss = 'mae')
 
 # Training
 TEST_SIZE = 0.2
@@ -89,9 +88,12 @@ class Elem():
 class Heap():
     def __init__(self, model, data, size):
         self.array = deque(maxlen=size)
-        for element in data:
-            element = np.reshape(element, (1, num_mods * 3))
-            value = model.predict(element)[0][0]
+        np_data = np.array(data)
+        val_vector = model.predict(np_data)
+
+        for i in range(len(data)):
+            element = np.reshape(data[i], (1, num_mods * 3))
+            value = val_vector[i][0]
 
             e = Elem(element, value)
 
@@ -267,11 +269,14 @@ def get_ordered_sequence(list, k):
     return res
 
 
+N = int(scipy.special.binom(len(modifications), num_mods))
+
+
 if num_mods == 6:
-    num_trials = 400000
+    num_trials = int(2e+6)
 
 else:
-    num_trials = 200000
+    num_trials = int(1e+6)
 
 # Initialize and build heap
 sz = min(8 * num_mods, len(x_test))
@@ -294,12 +299,21 @@ vector = model.predict(ls)
 for i in range(num_trials):
     val = vector[i][0]
     if val > h.peek():
+        checkls = [elem.seq for elem in h.array]
         seq = np.reshape(ls[i], (1, num_mods * 3))
-        h.insert(seq, val)
+        exist = False
+
+        for s in checkls:
+            b = s == seq
+            if b.all() == True:
+                exist = True
+                break
+        
+        if not exist:
+            h.insert(seq, val)
     
     if i % 100 == 0:
         print(i)
-
 
 opt_seq = None
 opt_val = -1
@@ -309,6 +323,7 @@ for element in range(len(h.array)):
     agent = QAgent(modified)
     agent.qlearn(600, render=False)
     rews = utility(agent)
+    print(colored(rews, "red"))
     if rews > opt_val:
         opt_val = rews
         opt_seq = seq
