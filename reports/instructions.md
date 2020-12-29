@@ -182,7 +182,7 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - Please read point 13.
 
-- This file takes input from ```data/connected_data_X.csv``` and implements the same idea as ```feed.py```. The number of modifications, ```num_mods```, can be modified on line ```41```. 
+- This file takes input from ```data/connected_data_X.csv``` and implements the same idea as ```feed.py``` (the main difference is that we are using connected training to gather data). The number of modifications, ```num_mods```, can be modified on line ```41```. 
 
 - The output is stored in ```data/connected_sl_result_X.txt```, where X is the number of modifications.
 
@@ -212,7 +212,7 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - Please read points 9 and 13. 
 
-- This file implements the same idea as ```feed_trimmed.py```, but it only takes in data from ```data/connected_data_trimmed_X.csv```. The number of modifications can be modified on line ```42```.
+- This file implements the same idea as ```feed_trimmed.py```, but it only takes in data from ```data/connected_data_trimmed_X.csv``` (the difference is that we are using connected training to gather data). The number of modifications can be modified on line ```42```.
 
 - The output is stored in ```data/connected_sl_trimmed_result_X.txt```, where X is the number of modifications.
 
