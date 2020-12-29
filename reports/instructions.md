@@ -46,7 +46,7 @@ This markdown contains the aims and instructions for running each Python file in
 
 - There are two kinds of modifications to an environment. For an environment ```env``` of class ```TaxiEnv```, its walls can be found by outputting ```env.walls```. To find the cells that allow diagonal moves, we simply output ```env.special```. The modifications allowed are to cut down walls, or to include more special cells.
 
-- To cut down a wall (walls), we initialize a new environment ```new_env = env.transition(A)```, where ```A``` is a list of walls to be cut down. Walls are represented as tuples on the string representation of the environment, whereas cells are represented as tuples on the 5x5 square representation (so ```(0, 0)``` means top left square).
+- To cut down a wall (walls), we initialize a new environment ```new_env = env.transition(A)```, where ```A``` is a list of walls to be cut down. Walls are represented as tuples on the string representation of the environment, whereas cells are represented as tuples on the 5x5 square representation (so ```(0, 0)``` means top left square). The string representation of the environment is on lines ```14-22```.
 
 - To introduce a new special cell, we append it to ```env.special``` via ```env.special.append(c)```, where ```c``` is a tuple representing the cell. 
 
