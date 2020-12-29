@@ -142,7 +142,7 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - The error is often found to be 1 to 4 over 300 starting states, taking the sum of rewards. However, since we are taken the mean of the rewards, the error is divided by 300, which is an error we are willing to accept for time decrease.
 
-- In ```greedy.py```, we can even use an agent used in the previous iteration to train in the new iteration. Since the environments in this algorithm differ by only one modification, the connected training becomes much more robust (compared to a modified environment with, say, 5 modifications and an agent from the original environment). 
+- In ```greedy.py```, we can even use an agent used in the previous iteration to train in the new iteration. Since the environments in this algorithm differ by only one modification, the connected training becomes much more robust (compared to a modified environment with, say, 5 modifications and an agent from the original environment). This idea has **already been implemented**.
 
 14. ```connect_qlearn.py```
 
@@ -168,5 +168,59 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - Usage: ```python connect_potency.py```
 
+16. ```connected_allstates.py```
 
+- Please read point 13.
+
+- This file basically implements the same idea in ```allstates.py```, but the main difference is that the agents used to train in random environments and collect utilities are all connected agents. This change can be seen on lines ```83 - 85```, where the function ```connected_qlearn_as_func``` is implemented, and below ```main``` on line ```114```.
+
+- The output is stored in ```data/connected_data_X.csv```, where X is the number of modifications.
+
+17. ```connected_feed.py```
+
+- Please read point 13.
+
+- This file takes input from ```data/connected_data_X.csv``` and implements the same idea as ```feed.py```. The number of modifications, ```num_mods```, can be modified on line ```41```. 
+
+- The output is stored in ```data/connected_sl_result_X.txt```, where X is the number of modifications.
+
+18. ```connect_mcts.py```
+
+- Please read point 13. 
+
+- This file implements the same idea as ```mcts.py```, but the main difference here is that the agents used for playout phases are connected agents from a trained agent in the original environment located at the root. The number of modifications, or ```max_layer```, can be modified on line ```33```.
+
+- The output is stored in ```data/connect_mcts_result_X.txt``` where X is the number of modifications.
+
+19. ```connected_allstates_trimmed.py```
+
+- Please read points 9 and 13.
+
+- This file implements the same idea as ```allstates_trimmed.py```, but the main difference is that agents are connected to a trained agent in the original environment. The values of ```rounds``` and ```num_mods``` can be modified in lines ```79``` and ```89```.
+
+- The output is stored in ```data/connected_data_trimmed_X.csv```, where X is the number of modifications.
+
+20. ```connected_feed_trimmed.py```
+
+- Please read points 9 and 13. 
+
+- This file implements the same idea as ```feed_trimmed.py```, but it only takes in data from ```data/connected_data_trimmed_X.csv```. The number of modifications can be modified on line ```42```.
+
+- The output is stored in ```data/connected_sl_trimmed_result_X.txt```, where X is the number of modifications.
+
+21. ```connect_mcts_trimmed.py```
+
+- Please read points 9 and 13.
+
+- This file implements the same idea as ```mcts_trimmed.py```, but the agents used for playout phases are connected to a trained agent of the original environment located at the root. The number of modifications, or ```max_layer```, can be modified on line ```34```.
+
+- The output is stored in ```data/connect_mcts_trimmed_result_X.txt```, where X is the number of modifications.
+
+22. ```correct_data.py```
+
+- This file is used for multiprocessing debugging when we implemented ```allstates.py```.
+
+23. ```path_based.py```
+
+- This file is a deprecated version of a greedy solution to this problem.
 
