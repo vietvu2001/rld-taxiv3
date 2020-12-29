@@ -50,10 +50,16 @@ This markdown contains the aims and instructions for running each Python file in
 
 - To introduce a new special cell, we append it to ```env.special``` via ```env.special.append(c)```, where ```c``` is a tuple representing the cell. 
 
-- Example, to take down wall ```(1, 4)``` (here ```(1, 4)``` is the position of the wall in the **string** representation of the environment), and add cell ```(2, 2)``` to that environment, these lines of code can be written:
+- Example, to take down wall ```(1, 4)``` (here ```(1, 4)``` is the position of the wall in the **string** representation of the environment), and add cell ```(2, 2)``` to that environment, these lines of code can be written in order:
 
 ```new_env = env.transition([(1, 4)])```
 
 ```new_env.special.append((2, 2))```
+
+- To take down two walls, ```(1, 4)``` and ```(5, 2)``` from some environment ```env```, granted they have not been cut off yet, we write
+
+```new_env = env.transition([(1, 4), (5, 2)])```
+
+- To visualize the environment ```env```, we write ```env.render()``` 
 
 - This file is used as a helper file.
