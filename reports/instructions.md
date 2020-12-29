@@ -156,7 +156,17 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - Please read point 13.
 
-- This file experiments with the number of iterations we can use to train a modified environment, based on the idea of **connected training**. 
+- This file experiments with the number of iterations we can use to train a modified environment, based on the idea of **connected training**.
+
+- The idea is simple: let the number of iterations be ```N```. Then we compare a connected agent trained in ```N``` iterations to a normal agent trained in 600 iterations. The error is defined as the difference in the sum of rewards, taken over all starting states.
+
+- We use parallel computing and make a list of error values, and try to minimize the average error as well as keep ```N``` far away enough from 600. After experimenting, we find out that ```N = 400``` is a reasonable choice.
+
+- The value of ```N``` can be modified on line ```87```, where ```400``` is set as default.
+
+- This file is only an experiment, but is useful for solving the problem.
+
+- Usage: ```python connect_potency.py```
 
 
 
