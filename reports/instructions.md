@@ -148,9 +148,15 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - Please read point 13.
 
-- This file implements the function for connected Q-Learning, based on the idea discussed in point 13.
+- This file implements the function for **connected Q-Learning**, based on the idea discussed in point 13.
 
 - This file works as a helper file.
+
+15. ```connect_potency.py```
+
+- Please read point 13.
+
+- This file experiments with the number of iterations we can use to train a modified environment, based on the idea of **connected training**. 
 
 
 
