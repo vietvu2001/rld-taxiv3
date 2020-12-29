@@ -53,6 +53,7 @@ This markdown contains the aims and instructions for running each Python file in
 - Example, to take down wall ```(1, 4)``` (here ```(1, 4)``` is the position of the wall in the **string** representation of the environment), and add cell ```(2, 2)``` to that environment, these lines of code can be written:
 
 ```new_env = env.transition([(1, 4)])```
+
 ```new_env.special.append((2, 2))```
 
 - This file is used as a helper file.
