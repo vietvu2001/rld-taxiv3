@@ -96,7 +96,9 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - This section does not contain any code, but an idea. To improve the efficiency of Supervised Learning and Monte Carlo Tree Search methods, we can reduce the number of modifications. This stems from the observation that, for example, we do not really need to add diagonal moves to cell ```(4, 0)``` on the 5x5 representation of environment, because it is not possible to move diagonally as there are two walls blocking it anyway!
 
-- We use the ```cell_frequency``` and ```wall_interference``` heuristics in ```heuristic.py``` to chop down the number of possible modifications that we **care** about. 
+- We use the ```cell_frequency``` heuristic in ```heuristic.py``` to chop down the number of possible modifications to only **those that matter**. Specifically, we reduce the number of modifications from 31 to 20, by picking all the walls (there are 6 walls), and 14 cells that have the highest rankings out of 25 cells. By reducing nearly half the number of modifications, we drastically reduce the total number of possible modifications.
+
+- On the MCTS tree, deeper searches can be made. On Supervised Learning, better efficiency in learning vectors of modifications and outputs can be achieved. **Theoretically**.
 
 
 
