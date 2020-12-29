@@ -88,7 +88,15 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - Return the found vector of modifications and corresponding utility.
 
+- The output is stored in ```data/greedy_X.txt```, where X is the number of modifications.
+
 - Usage: ```python greedy.py```
+
+8. **Please read: An introduction to reductions of possible modifications**
+
+- This section does not contain any code, but an idea. To improve the efficiency of Supervised Learning and Monte Carlo Tree Search methods, we can reduce the number of modifications. This stems from the observation that, for example, we do not really need to add diagonal moves to cell ```(4, 0)``` on the 5x5 representation of environment, because it is not possible to move diagonally as there are two walls blocking it anyway!
+
+
 
 
 
