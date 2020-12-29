@@ -22,6 +22,8 @@ This markdown contains the aims and instructions for running each Python file in
 
 - We also implement the ```utility``` function, which also takes an agent of class ```Agent``` as input, and returns the utility of the agent in its respective environment.
 
+- More details are explained in the documentation of ```greedy.py```.
+
 - This file is used as a helper file.
 
 4. ```qlearn.py```
@@ -63,3 +65,30 @@ This markdown contains the aims and instructions for running each Python file in
 - To visualize the environment ```env```, we write ```env.render()``` 
 
 - This file is used as a helper file.
+
+7. ```greedy.py```
+
+- This file implements the greedy algorithm. This algorithm is basically as follows: we start with an original environment ```env```. We make an agent of class ```Agent``` and train it:
+
+```agent = QAgent(env)```
+
+```agent.qlearn(600)```
+
+- Then, based on ```heuristic.py```, we can run
+
+```cell_frequency(agent)```
+
+```wall_interference(agent)```
+
+to get the rankings mentioned in ```heuristic.py```. The outputs are dictionaries.
+
+- From here, we get the max value of each dictionary, and find **all** tuples of walls and cells that have this max value in their respective dictionaries (walls have their own dictionary from ```wall_interference```, and cells have their own dictionary from ```cell_frequency```). We make the environments from these tuples and train on them to find out which tuple (between wall and cell) that leads to the highest utility, from the function ```utility``` that takes as input an agent of class ```Agent```. From here, we make the modification based on whether this found tuple is a wall or cell.
+
+- Repeat this process until we have reached the budget (the number of repetitions is equal to the budget).
+
+- Return the found vector of modifications and corresponding utility.
+
+- Usage: ```python greedy.py```
+
+
+
