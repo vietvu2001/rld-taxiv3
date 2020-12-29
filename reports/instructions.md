@@ -36,4 +36,8 @@ This markdown contains the aims and instructions for running each Python file in
 
 - A greedy search through the tree is conducted. Starting from the root, we choose the best *explored* child based on the UCB heuristic. This is done until we reach the end of the tree (as in reaching a leaf of the tree).
 
-- The greedy search is guaranteed to reach a leaf because of a optimisation strategy: we will remember *an entire vector of modifications* if it leads to a utility passing some predetermined threshold. This threshold can be modified on line ```195```.
+- The greedy search is guaranteed to reach a leaf because of an optimisation strategy: we will remember *an entire vector of modifications* if it leads to a utility passing some predetermined threshold. This threshold can be modified on line ```195```.
+
+- The output is stored in ```data/mcts_result_X```, where X is the number of modifications.
+
+- Usage: ```mcts.py```
