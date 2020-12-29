@@ -176,6 +176,8 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - The output is stored in ```data/connected_data_X.csv```, where X is the number of modifications.
 
+- Usage: ```python connected_allstates.py```
+
 17. ```connected_feed.py```
 
 - Please read point 13.
@@ -183,6 +185,8 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 - This file takes input from ```data/connected_data_X.csv``` and implements the same idea as ```feed.py```. The number of modifications, ```num_mods```, can be modified on line ```41```. 
 
 - The output is stored in ```data/connected_sl_result_X.txt```, where X is the number of modifications.
+
+- Usage: ```python connected_feed.py```
 
 18. ```connect_mcts.py```
 
@@ -192,6 +196,8 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - The output is stored in ```data/connect_mcts_result_X.txt``` where X is the number of modifications.
 
+- Usage: ```python connect_mcts.py```
+
 19. ```connected_allstates_trimmed.py```
 
 - Please read points 9 and 13.
@@ -199,6 +205,8 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 - This file implements the same idea as ```allstates_trimmed.py```, but the main difference is that agents are connected to a trained agent in the original environment. The values of ```rounds``` and ```num_mods``` can be modified in lines ```79``` and ```89```.
 
 - The output is stored in ```data/connected_data_trimmed_X.csv```, where X is the number of modifications.
+
+- Usage: ```python connected_allstates_trimmed.py```
 
 20. ```connected_feed_trimmed.py```
 
@@ -208,6 +216,8 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - The output is stored in ```data/connected_sl_trimmed_result_X.txt```, where X is the number of modifications.
 
+- Usage: ```python connected_feed_trimmed.py```
+
 21. ```connect_mcts_trimmed.py```
 
 - Please read points 9 and 13.
@@ -215,6 +225,8 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 - This file implements the same idea as ```mcts_trimmed.py```, but the agents used for playout phases are connected to a trained agent of the original environment located at the root. The number of modifications, or ```max_layer```, can be modified on line ```34```.
 
 - The output is stored in ```data/connect_mcts_trimmed_result_X.txt```, where X is the number of modifications.
+
+- Usage: ```python connect_mcts_trimmed.py```
 
 22. ```correct_data.py```
 
