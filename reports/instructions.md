@@ -92,15 +92,65 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - Usage: ```python greedy.py```
 
-8. **Please read: An introduction to reductions of possible modifications**
+8. ```multi_greedy.py```
+
+- Same as ```greedy.py``, but here we use parallel computing to reduce the time needed to train.
+
+9. **Please read: An introduction to reductions of possible modifications**
 
 - This section does not contain any code, but an idea. To improve the efficiency of Supervised Learning and Monte Carlo Tree Search methods, we can reduce the number of modifications. This stems from the observation that, for example, we do not really need to add diagonal moves to cell ```(4, 0)``` on the 5x5 representation of environment, because it is not possible to move diagonally as there are two walls blocking it anyway!
 
-- We use the ```cell_frequency``` heuristic in ```heuristic.py``` to chop down the number of possible modifications to only **those that matter**. Specifically, we reduce the number of modifications from 31 to 20, by picking all the walls (there are 6 walls), and 14 cells that have the highest rankings out of 25 cells. By reducing nearly half the number of modifications, we drastically reduce the total number of possible modifications.
+- We use the ```cell_frequency``` heuristic in ```heuristic.py``` to chop down the number of possible modifications to only **those that matter**. Specifically, we reduce the number of modifications from 31 to 20, by picking all the walls (there are 6 walls), and 14 cells that have the highest rankings out of 25 cells by output of ```cell_frequency``` on the original environment. By reducing nearly half the number of modifications, we drastically reduce the total number of possible modifications.
 
 - On the MCTS tree, deeper searches can be made. On Supervised Learning, better efficiency in learning vectors of modifications and outputs can be achieved. **Theoretically**.
 
+10. ```allstates_trimmed.py```
 
+- Please read point 9. 
+
+- This is the same implementation of ```allstates.py```, but the main difference here is that the list ```modifications``` has been modified from all modifications to only 20 (this can be seen on lines ```95 - 105```).
+
+- The number of modifications can be modified on line ```90```, and the number of rounds on line ```80```.
+
+- The output will be stored to ```data/data_trimmed_X.csv```, where X is the number of modifications.
+
+- Usage: ```python allstates_trimmed.py```
+
+11. ```feed_trimmed.py```
+
+- Please read point 9.
+
+- This is the same implementation of ```feed.py```, but the main difference here is that it only takes input from ```data/data_trimmed_X.csv```.
+
+- The number of modifications can be modified on line ```42```. The output is stored in ```data/sl_trimmed_result_X.txt```, where X is the number of modifications.
+
+- Usage: ```python feed_trimmed.py```
+
+12. ```mcts_trimmed.py```
+
+- Please read point 9. 
+
+- This is the same implementation of ```mcts.py```, but the main difference here is that the list of modifications has been changed. This change can be seen on lines ```145 - 154```.
+
+- The output is stored in ```data/mcts_trimmed_result_X.txt```, where X is the number of modifications.
+
+- Usage: ```python mcts_trimmed.py```
+
+13. **Please read: An introduction to connected Q-Learning training**
+
+- This section does not contain code, but another idea. The main purpose of connected training is to improve on the time needed to train. As the reader may already find out in point 7, the number of iterations needed to train a Q-Learning agent is ```600```. We can reduce this number by **cloning a Q-Learning agent already trained in the original environment** to train in the modified environment. This will reduce the number of iterations, but **it is unfortunately only an approximation**. 
+
+- The error is often found to be 1 to 4 over 300 starting states, taking the sum of rewards. However, since we are taken the mean of the rewards, the error is divided by 300, which is an error we are willing to accept for time decrease.
+
+- In ```greedy.py```, we can even use an agent used in the previous iteration to train in the new iteration. Since the environments in this algorithm differ by only one modification, the connected training becomes much more robust (compared to a modified environment with, say, 5 modifications and an agent from the original environment). 
+
+14. ```connect_qlearn.py```
+
+- Please read point 13.
+
+- This file implements the function for connected Q-Learning, based on the idea discussed in point 13.
+
+- This file works as a helper file.
 
 
 
