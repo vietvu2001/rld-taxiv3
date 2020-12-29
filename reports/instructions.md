@@ -22,22 +22,37 @@ This markdown contains the aims and instructions for running each Python file in
 
 - We also implement the ```utility``` function, which also takes an agent of class ```Agent``` as input, and returns the utility of the agent in its respective environment.
 
-- Usage: ```python heuristic.py```
+- This file is used as a helper file.
 
 4. ```qlearn.py```
 
-- This file implements the training and evaluation of a Q-Learning agent in its respective environment. The class ```Agent``` is implemented in this file.
-
-- Usage: ```qlearn.py```
+- This file implements the training and evaluation of a Q-Learning agent in its respective environment. The class ```Agent``` is implemented in this file. It is used in the other files as a helper file, but there is no output in this file.
 
 5. ```mcts.py```
 
 - This file implements the Monte Carlo Tree Search algorithm for the problem. The number of modifications corresponds to the maximum layer of the tree, and denoted as ```max_layer``` in the file. Thus, to modify the number of modifications, modify the value of ```max_layer``` on line ```32```. The number of iterations on which the tree is explored can be modified on line ```415```.
 
-- A greedy search through the tree is conducted. Starting from the root, we choose the best *explored* child based on the UCB heuristic. This is done until we reach the end of the tree (as in reaching a leaf of the tree).
+- A greedy search through the tree is conducted. Starting from the root, we choose the best **explored** child based on the UCB heuristic. This is done until we reach the end of the tree (as in reaching a leaf of the tree).
 
-- The greedy search is guaranteed to reach a leaf because of an optimisation strategy: we will remember *an entire vector of modifications* if it leads to a utility passing some predetermined threshold. This threshold can be modified on line ```195```.
+- The greedy search is guaranteed to reach a leaf because of an optimisation strategy: we will store **an entire vector of modifications** if it leads to a utility passing some predetermined threshold. This threshold can be modified on line ```195```.
 
 - The output is stored in ```data/mcts_result_X```, where X is the number of modifications.
 
 - Usage: ```mcts.py```
+
+6. ```taxienv.py```
+
+- This file contains the implementation of the ```Taxi-v3``` environment, based on OpenAI Gym. Here the code is modified to allow modifications to the environment.
+
+- There are two kinds of modifications to an environment. For an environment ```env``` of class ```TaxiEnv```, its walls can be found by outputting ```env.walls```. To find the cells that allow diagonal moves, we simply output ```env.special```. The modifications allowed are to cut down walls, or to include more special cells.
+
+- To cut down a wall (walls), we initialize a new environment ```new_env = env.transition(A)```, where ```A``` is a list of walls to be cut down. Walls are represented as tuples on the string representation of the environment, whereas cells are represented as tuples on the 5x5 square representation (so ```(0, 0)``` means top left square).
+
+- To introduce a new special cell, we append it to ```env.special``` via ```env.special.append(c)```, where ```c``` is a tuple representing the cell. 
+
+- Example, to take down wall ```(1, 4)``` (here ```(1, 4)``` is the position of the wall in the **string** representation of the environment), and add cell ```(2, 2)``` to that environment, these lines of code can be written:
+
+```new_env = env.transition([(1, 4)])```
+```new_env.special.append((2, 2))```
+
+- This file is used as a helper file.
