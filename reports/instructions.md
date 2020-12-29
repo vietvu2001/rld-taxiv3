@@ -142,7 +142,7 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 - The error is often found to be 1 to 4 over 300 starting states, taking the sum of rewards. However, since we are taken the mean of the rewards, the error is divided by 300, which is an error we are willing to accept for time decrease.
 
-- In ```greedy.py```, we can even use an agent used in the previous iteration to train in the new iteration. Since the environments in this algorithm differ by only one modification, the connected training becomes much more robust (compared to a modified environment with, say, 5 modifications and an agent from the original environment). This idea has **already been implemented**.
+- In ```greedy.py```, we can even use an agent used in the previous iteration to train in the new iteration. Since the environments in this algorithm differ by only one modification from one iteration to the next, the connected training becomes much more robust (compared to a modified environment with, say, 5 modifications and an agent from the original environment). This idea has **already been implemented**.
 
 14. ```connect_qlearn.py```
 
