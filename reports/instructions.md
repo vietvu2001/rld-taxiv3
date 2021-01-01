@@ -94,7 +94,7 @@ to get the rankings mentioned in ```heuristic.py```. The outputs are dictionarie
 
 8. ```multi_greedy.py```
 
-- Same as ```greedy.py``, but here we use parallel computing to reduce the time needed to train.
+- Same as ```greedy.py```, but here we use parallel computing to reduce the time needed to train.
 
 9. **Please read: An introduction to reductions of possible modifications**
 
