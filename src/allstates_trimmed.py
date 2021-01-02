@@ -22,6 +22,7 @@ from termcolor import colored  # pylint: disable=import-error
 import multiprocessing as mp
 from multiprocessing import Manager
 from heuristic import wall_interference, cell_frequency
+from connect_qlearn import connected_qlearn
 
 map = [
     "+---------+",
@@ -51,13 +52,16 @@ def simulate_env(env, num_changes):
 
 
 def utility(agent):
-    rewards = []
+    rewards = 0
+    count = 0
     starts = agent.env.resettable_states()
+    
     for point in starts:
         r = agent.eval(fixed=point, show=False)[1]
-        rewards.append(r)
+        rewards += r
+        count += 1
 
-    return np.mean(rewards)
+    return rewards / count
 
 
 def qlearn_as_func(agent, env, number, agents, insert_position=-1):
@@ -65,10 +69,15 @@ def qlearn_as_func(agent, env, number, agents, insert_position=-1):
     agents[insert_position] = agent
 
 
+def connected_qlearn_as_func(orig_agent, env, number, agents, insert_position=-1):
+    agent = connected_qlearn(orig_agent, env, 400)
+    agents[insert_position] = agent
+
+
 data = []
 
 if __name__ == "__main__":
-    rounds = 750
+    rounds = 800
     mp.set_start_method = "spawn"
     num_processes = 10
     processes = []
@@ -78,15 +87,15 @@ if __name__ == "__main__":
         agents.append(0)  # keeper
 
     categories = []
-    num_mods = 5
+    num_mods = 6
 
     map_to_numpy = np.asarray(map, dtype="c")
     env = TaxiEnv(map_to_numpy)  # reference environment
 
-    agent = QAgent(env)
-    agent.qlearn(600, show=False)
-    cell_dict = cell_frequency(agent)
-    wall_dict = wall_interference(agent)
+    orig_agent = QAgent(env)
+    orig_agent.qlearn(600, show=False)
+    cell_dict = cell_frequency(orig_agent)
+    wall_dict = wall_interference(orig_agent)
     modifications = []
 
     for element in wall_dict:
@@ -101,7 +110,9 @@ if __name__ == "__main__":
             results = simulate_env(env, num_mods)
             modified = results[0]
             categories.append(results[1])
+
             agent = QAgent(modified)
+
             p = mp.Process(target=qlearn_as_func, args=(agent, modified, i, agents, i + iter * num_processes))
             p.start()
             processes.append(p)
