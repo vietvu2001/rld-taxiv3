@@ -22,6 +22,7 @@ from collections import deque
 from taxienv import TaxiEnv
 from qlearn import QAgent
 from termcolor import colored  # pylint: disable=import-error
+from heuristic import wall_interference, cell_frequency
 
 map = [
     "+---------+",
@@ -245,15 +246,6 @@ def utility(agent):
     return np.mean(rewards)
 
 
-modifications = []
-for wall in env.walls:
-    modifications.append((0, wall[0], wall[1]))
-for row in range(env.width):
-    for col in range(env.length):
-        modifications.append((1, row, col))
-
-
-
 def get_ordered_sequence(list, k):
     N = len(list)
     res = []
@@ -268,14 +260,25 @@ def get_ordered_sequence(list, k):
         
     return res
 
-N = int(scipy.special.binom(len(modifications), num_mods))
-
 
 if num_mods == 6:
     num_trials = int(2e+6)
 
 else:
     num_trials = int(1e+6)
+
+
+orig_agent = QAgent(env)
+orig_agent.qlearn(600)
+cell_dict = cell_frequency(orig_agent)
+wall_dict = wall_interference(orig_agent)
+modifications = []
+
+for element in wall_dict:
+    modifications.append((0, element[0][0], element[0][1]))
+for element in cell_dict[0 : 14]:
+    row, col = element[0]
+    modifications.append((1, row, col))
 
 # Initialize and build heap
 sz = min(12 * num_mods, len(x_test))

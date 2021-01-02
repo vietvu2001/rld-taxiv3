@@ -20,6 +20,7 @@ from qlearn import QAgent
 from termcolor import colored  # pylint: disable=import-error
 from heuristic import wall_interference, cell_frequency
 
+
 map = [
     "+---------+",
     "|R: | : :G|",
@@ -103,7 +104,7 @@ class Node():
 
     def get_available_modifications(self, tree):
         ls = []
-        max_mod = len(tree.modifications) + self.layer - max_layer
+        max_mod = len(tree.modifications) + self.layer - tree.max_layer
         if self.parent is None:
             min_mod = 0
         
@@ -126,8 +127,8 @@ class Node():
         return ls_ret
 
 
-    def terminal(self):
-        return self.layer == max_layer
+    def terminal(self, tree):
+        return self.layer == tree.max_layer
 
     
     def fully_expanded(self, tree):
@@ -136,7 +137,7 @@ class Node():
 
 
 class Tree():
-    def __init__(self, env):
+    def __init__(self, env, max_layer):
         self.env = env
         self.modifications = []
         self.counter = 0
@@ -155,6 +156,7 @@ class Tree():
         
         self.num_nodes = 0
         self.root = None
+        self.max_layer = max_layer
         self.threshold = 9.75
 
 
@@ -220,8 +222,8 @@ class Tree():
     def default_policy(self, node_index):
         start = node_index
         simulate_env = copy.deepcopy(self.nodes[start].env)
-        num_modifications_applied = len(self.env.walls) - len(simulate_env.walls) + len(simulate_env.special)
-        mods_left = max_layer - num_modifications_applied
+        num_modifications_applied = len(self.env.walls) - len(simulate_env.walls) + len(simulate_env.special) - len(self.env.special)
+        mods_left = self.max_layer - num_modifications_applied
         
         # Choose from unused modifications, from start node
         # We know that tree.nodes[start] is a leaf, so there is no used modifications at start yet.
@@ -229,7 +231,14 @@ class Tree():
         for i in range(self.nodes[start].modification + 1, len(self.modifications)):
             ls.append(i)
 
-        a = random.sample(ls, k=mods_left)
+        try:
+            a = random.sample(ls, k=mods_left)
+
+        except:
+            print(ls)
+            print(num_modifications_applied)
+            raise ValueError
+
         a = sorted(a)
         for element in a:
             mod = self.modifications[element]
@@ -245,6 +254,7 @@ class Tree():
 
         if reward > self.threshold:
             print(colored(a, "red"))
+            print(colored(reward, "red"))
             for element in a:
                 start = self.add_node(element, start).index
             
@@ -255,7 +265,7 @@ class Tree():
     
     def tree_policy(self, node_index):
         iter_index = node_index
-        while not self.nodes[iter_index].terminal():
+        while not self.nodes[iter_index].terminal(self):
             if not self.nodes[iter_index].fully_expanded(self):
                 return self.expand(iter_index)
             
@@ -295,14 +305,14 @@ class Tree():
     def greedy(self):
         walk = []
         start = 0
-        while self.nodes[start].layer < max_layer:
+        while self.nodes[start].layer < self.max_layer:
             if len(self.nodes[start].visited_children) != 0:
                 start = self.best_child(start, 0, 0, expanded=False)
                 mod_index = self.nodes[start].modification
                 walk.append(self.modifications[mod_index])
         
-        if len(walk) < max_layer:
-            print("MCTS insufficient to get {} modifications".format(max_layer))
+        if len(walk) < self.max_layer:
+            print("MCTS insufficient to get {} modifications".format(self.max_layer))
             return (walk, None)
 
         else:
@@ -325,35 +335,33 @@ class Tree():
         
         return dict_return
 
+if __name__ == "__main__":
+    map_to_numpy = np.asarray(map, dtype='c')
+    env = TaxiEnv(map_to_numpy)
+    tree = Tree(env, max_layer)
+    tree.initialize()
+    tree.ucb_search(iterations=3000)
+    r_dir = os.path.abspath(os.pardir)
+    data_dir = os.path.join(r_dir, "data")
+    csv_dir = os.path.join(data_dir, "tree_trimmed_{}.csv".format(tree.max_layer))
+    txt_dir = os.path.join(data_dir, "mcts_trimmed_result_{}.txt".format(tree.max_layer))
 
-map_to_numpy = np.asarray(map, dtype='c')
-env = TaxiEnv(map_to_numpy)
-tree = Tree(env)
-tree.initialize()
-tree.ucb_search(iterations=3000)
-r_dir = os.path.abspath(os.pardir)
-data_dir = os.path.join(r_dir, "data")
-csv_dir = os.path.join(data_dir, "tree_trimmed_{}.csv".format(max_layer))
-txt_dir = os.path.join(data_dir, "mcts_trimmed_result_{}.txt".format(max_layer))
+    with open(csv_dir, "w", newline='') as file:
+        fieldnames = list(tree.info(0).keys())
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
 
-with open(csv_dir, "w", newline='') as file:
-    fieldnames = list(tree.info(0).keys())
-    writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        for node in tree.nodes:
+            writer.writerow(tree.info(node.index))
 
-    writer.writeheader()
-    for node in tree.nodes:
-        writer.writerow(tree.info(node.index))
+    a = tree.greedy()
 
-a = tree.greedy()
-
-with open(txt_dir, "w") as file:
-    file.write("Modifications: ")
-    file.write(str(a[0]))
-    file.write("\n")
-    file.write("Utility: ")
-    if a[1] is not None:
-        file.write(str(a[1]))
-    else:
-        file.write("Utility not available")
-
-print(tree.modifications)
+    with open(txt_dir, "w") as file:
+        file.write("Modifications: ")
+        file.write(str(a[0]))
+        file.write("\n")
+        file.write("Utility: ")
+        if a[1] is not None:
+            file.write(str(a[1]))
+        else:
+            file.write("Utility not available")

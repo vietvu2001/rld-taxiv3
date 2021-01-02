@@ -63,13 +63,16 @@ def simulate_env(env, num_changes):
 
 
 def utility(agent):
-    rewards = []
+    rewards = 0
+    count = 0
     starts = agent.env.resettable_states()
+    
     for point in starts:
         r = agent.eval(fixed=point, show=False)[1]
-        rewards.append(r)
+        rewards += r
+        count += 1
 
-    return np.mean(rewards)
+    return rewards / count
 
 
 def qlearn_as_func(agent, env, number, agents, insert_position=-1):

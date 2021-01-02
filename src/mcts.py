@@ -407,35 +407,35 @@ class Tree():
         
         return dict_return
 
+if __name__ == "__main__":
+    map_to_numpy = np.asarray(map, dtype='c')
+    env = TaxiEnv(map_to_numpy)
+    tree = Tree(env)
+    tree.initialize()
+    tree.ucb_search(iterations=3000)
 
-map_to_numpy = np.asarray(map, dtype='c')
-env = TaxiEnv(map_to_numpy)
-tree = Tree(env)
-tree.initialize()
-tree.ucb_search(iterations=3000)
+    # Store data
+    r_dir = os.path.abspath(os.pardir)
+    data_dir = os.path.join(r_dir, "data")
+    csv_dir = os.path.join(data_dir, "tree_{}.csv".format(max_layer))
+    txt_dir = os.path.join(data_dir, "mcts_result_{}.txt".format(max_layer))
 
-# Store data
-r_dir = os.path.abspath(os.pardir)
-data_dir = os.path.join(r_dir, "data")
-csv_dir = os.path.join(data_dir, "tree_{}.csv".format(max_layer))
-txt_dir = os.path.join(data_dir, "mcts_result_{}.txt".format(max_layer))
+    with open(csv_dir, "w", newline='') as file:
+        fieldnames = list(tree.info(0).keys())
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
 
-with open(csv_dir, "w", newline='') as file:
-    fieldnames = list(tree.info(0).keys())
-    writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        for node in tree.nodes:
+            writer.writerow(tree.info(node.index))
 
-    writer.writeheader()
-    for node in tree.nodes:
-        writer.writerow(tree.info(node.index))
+    a = tree.greedy()
 
-a = tree.greedy()
-
-with open(txt_dir, "w") as file:
-    file.write("Modifications: ")
-    file.write(str(a[0]))
-    file.write("\n")
-    file.write("Utility: ")
-    if a[1] is not None:
-        file.write(str(a[1]))
-    else:
-        file.write("Utility not available")
+    with open(txt_dir, "w") as file:
+        file.write("Modifications: ")
+        file.write(str(a[0]))
+        file.write("\n")
+        file.write("Utility: ")
+        if a[1] is not None:
+            file.write(str(a[1]))
+        else:
+            file.write("Utility not available")
