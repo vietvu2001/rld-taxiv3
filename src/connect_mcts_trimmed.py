@@ -31,7 +31,7 @@ map = [
     "+---------+",
 ]
 
-max_layer = 6
+max_layer = 4
 
 
 def utility(agent):
@@ -209,6 +209,7 @@ class Tree():
 
         opt = float("-inf")
         child = None
+        tup = None
         for c in self.nodes[node_index].visited_children:
             scaled_reward = self.nodes[c].sum_reward / self.nodes[c].count
             exploration_term = const * math.sqrt(2 * math.log(self.nodes[node_index].count) / self.nodes[c].count)
@@ -220,6 +221,9 @@ class Tree():
             if result > opt:
                 opt = result
                 child = c
+                tup = (scaled_reward, exploration_term, extra)
+
+        print(colored(tup, "red"))
         
         return child
 
@@ -260,14 +264,14 @@ class Tree():
         return self.scale(reward)
 
     
-    def tree_policy(self, node_index):
+    def tree_policy(self, node_index, c1, c2):
         iter_index = node_index
         while not self.nodes[iter_index].terminal(self):
             if not self.nodes[iter_index].fully_expanded(self):
                 return self.expand(iter_index)
             
             else:
-                iter_index = self.best_child(iter_index, 1, 1)
+                iter_index = self.best_child(iter_index, c1, c2)
         
         return iter_index
 
@@ -283,9 +287,26 @@ class Tree():
 
     def ucb_search(self, iterations):
         root_index = self.nodes[0].index
+        c1 = 2
+        c2 = 0.5
+
+        pre = -1
+        current = 0
+        count = 0
+
         for i in range(iterations):
+            if pre == current:
+                count += 1
+
+            else:
+                count = 0
+
+            if count == 6:
+                print(colored("Convergence condition satisfied at iteration: {}".format(i), "red"))
+                break
+
             print(colored("Iteration {} begins!".format(i), "red"))
-            leaf_index = self.tree_policy(root_index)
+            leaf_index = self.tree_policy(root_index, c1, c2)
             a = self.default_policy(leaf_index)
             if isinstance(a, list):
                 leaf_index = a[1]
@@ -294,9 +315,15 @@ class Tree():
             else:
                 reward = a
 
+            pre = current
+            current = reward
+
             self.backup(leaf_index, reward)
             print("Iteration {} ends!".format(i))
             print()
+
+            if c1 >= 0.5:
+                c1 *= 0.99
 
 
     def greedy(self):
@@ -338,7 +365,7 @@ if __name__ == "__main__":
     env = TaxiEnv(map_to_numpy)
     tree = Tree(env, max_layer)
     tree.initialize()
-    tree.ucb_search(iterations=3500)
+    tree.ucb_search(iterations=1500)
     r_dir = os.path.abspath(os.pardir)
     data_dir = os.path.join(r_dir, "data")
     csv_dir = os.path.join(data_dir, "tree_trimmed_{}.csv".format(tree.max_layer))
