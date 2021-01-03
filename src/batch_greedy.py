@@ -75,7 +75,7 @@ def batch_greedy(env, num_mods, num_mods_per_run, ls_num_iters):
         # Perform an MCTS search
         tree.ucb_search(iterations=num_iter)
 
-        a = tree.greedy()
+        a = tree.best_observed_choice()
         for elem in a[0]:
             mods_ret.append(elem)
 
@@ -105,7 +105,7 @@ def batch_greedy(env, num_mods, num_mods_per_run, ls_num_iters):
 
 
 num_mods = 4
-num_mods_per_run = 3
+num_mods_per_run = 2
 ls = num_iters[0 : num_mods_per_run]
 ans = batch_greedy(env, num_mods, num_mods_per_run, ls)
 

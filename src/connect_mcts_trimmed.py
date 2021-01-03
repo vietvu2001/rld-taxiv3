@@ -163,6 +163,10 @@ class Tree():
         self.agent.qlearn(500, show=False, render=False)
         self.env.reset()
 
+        # Storing best reward score and corresponding environment seen so far
+        self.max_reward = float("-inf")
+        self.opt_env = None
+
 
     def scale(self, x):
         return max(0, x - self.threshold)
@@ -223,7 +227,7 @@ class Tree():
                 child = c
                 tup = (scaled_reward, exploration_term, extra)
 
-        print(colored(tup, "red"))
+        print(colored("Chosen child stats: {}".format(tup), "red"))
         
         return child
 
@@ -253,11 +257,17 @@ class Tree():
         agent = connected_qlearn(self.agent, simulate_env, 425)
         reward = utility(agent)
 
-        if reward > self.threshold:
+        if reward > self.threshold + 0.5:
             print(colored(a, "red"))
             print(colored(reward, "red"))
             for element in a:
                 start = self.add_node(element, start).index
+
+            
+            # Update tree's max reward environment if possible
+            if reward > self.max_reward:
+                self.max_reward = reward
+                self.opt_env = copy.deepcopy(simulate_env)
             
             return [self.scale(reward), start]
 
@@ -287,24 +297,10 @@ class Tree():
 
     def ucb_search(self, iterations):
         root_index = self.nodes[0].index
-        c1 = 2
-        c2 = 0.5
-
-        pre = -1
-        current = 0
-        count = 0
+        c1 = 1
+        c2 = 1
 
         for i in range(iterations):
-            if pre == current:
-                count += 1
-
-            else:
-                count = 0
-
-            if count == 6:
-                print(colored("Convergence condition satisfied at iteration: {}".format(i), "red"))
-                break
-
             print(colored("Iteration {} begins!".format(i), "red"))
             leaf_index = self.tree_policy(root_index, c1, c2)
             a = self.default_policy(leaf_index)
@@ -315,15 +311,11 @@ class Tree():
             else:
                 reward = a
 
-            pre = current
-            current = reward
-
             self.backup(leaf_index, reward)
+            print(colored("Number of nodes so far: {}".format(len(self.nodes)), "green"))
+            print(colored("Maximum reward seen so far: {}".format(self.max_reward), "green"))
             print("Iteration {} ends!".format(i))
             print()
-
-            if c1 >= 0.5:
-                c1 *= 0.99
 
 
     def greedy(self):
@@ -345,6 +337,27 @@ class Tree():
             agent.qlearn(600, render=False)
             rews = utility(agent)
             return (walk, rews)
+
+    
+    def best_observed_choice(self):
+        vector = []
+        for wall in self.env.walls:
+            if wall not in self.opt_env.walls:
+                tup = (0, wall[0], wall[1])
+                vector.append(tup)
+
+        for cell in self.opt_env.special:
+            if cell not in self.env.special:
+                tup = (1, cell[0], cell[1])
+                vector.append(tup)
+
+        # Training to prevent errors arising from connected training
+        agent = QAgent(self.opt_env)
+        agent.qlearn(600)
+        rews = utility(agent)
+
+        return (vector, rews)
+
 
 
     def info(self, node_index):
