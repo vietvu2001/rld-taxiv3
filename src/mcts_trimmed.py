@@ -31,7 +31,7 @@ map = [
     "+---------+",
 ]
 
-max_layer = 6
+max_layer = 2
 
 
 def utility(agent):
@@ -157,7 +157,7 @@ class Tree():
         self.num_nodes = 0
         self.root = None
         self.max_layer = max_layer
-        self.threshold = 9.75
+        self.threshold = 8
 
         # Storing best reward and corresponding environment
         self.max_reward = float("-inf")
@@ -379,7 +379,7 @@ if __name__ == "__main__":
     env = TaxiEnv(map_to_numpy)
     tree = Tree(env, max_layer)
     tree.initialize()
-    tree.ucb_search(iterations=3000)
+    tree.ucb_search(iterations=200)
     r_dir = os.path.abspath(os.pardir)
     data_dir = os.path.join(r_dir, "data")
     csv_dir = os.path.join(data_dir, "tree_trimmed_{}.csv".format(tree.max_layer))
