@@ -76,7 +76,7 @@ def connected_qlearn_as_func(orig_agent, env, number, agents, insert_position=-1
 data = []
 
 if __name__ == "__main__":
-    rounds = 800
+    rounds = 5
     mp.set_start_method = "spawn"
     num_processes = 10
     processes = []
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         agents.append(0)  # keeper
 
     categories = []
-    num_mods = 6
+    num_mods = 1
 
     map_to_numpy = np.asarray(map, dtype="c")
     env = TaxiEnv(map_to_numpy)  # reference environment

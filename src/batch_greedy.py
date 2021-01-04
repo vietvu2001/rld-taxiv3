@@ -1,4 +1,4 @@
-from connect_mcts_trimmed import Node, Tree
+from mcts_trimmed import Node, Tree
 from taxienv import TaxiEnv
 from qlearn import QAgent
 from connect_qlearn import connected_qlearn
@@ -104,7 +104,7 @@ def batch_greedy(env, num_mods, num_mods_per_run, ls_num_iters):
     return (mods_ret, rews)
 
 
-num_mods = 3
+num_mods = 6
 num_mods_per_run = 2
 ls = num_iters[0 : num_mods_per_run]
 ans = batch_greedy(env, num_mods, num_mods_per_run, ls)

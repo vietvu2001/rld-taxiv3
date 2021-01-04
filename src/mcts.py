@@ -29,7 +29,7 @@ map = [
     "+---------+",
 ]
 
-max_layer = 6
+max_layer = 2
 
 gamma = 1  # Discount factor for past rewards
 max_steps_per_episode = 3000
@@ -192,7 +192,7 @@ class Tree():
         
         self.num_nodes = 0
         self.root = None
-        self.threshold = 9
+        self.threshold = 8
 
         self.max_layer = max_layer
 
@@ -336,12 +336,14 @@ class Tree():
 
         if reward > self.threshold + 0.5:
             print(colored(a, "red"))
+            print(colored(reward, "red"))
+
             for element in a:
                 start = self.add_node(element, start).index
 
             if reward > self.max_reward:
                 self.max_reward = reward
-                self.opt_env = simulate_env
+                self.opt_env = copy.deepcopy(simulate_env)
             
             return [self.scale(reward), start]
 
@@ -388,7 +390,7 @@ class Tree():
 
             self.backup(leaf_index, reward)
             print(colored("Number of nodes so far: {}".format(len(self.nodes)), "green"))
-            print(colored("Maximum reward seen so lfar: {}".format(self.max_reward), "green"))
+            print(colored("Maximum reward seen so far: {}".format(self.max_reward), "green"))
             print("Iteration {} ends!".format(i))
             print()
 
@@ -431,7 +433,9 @@ class Tree():
         agent.qlearn(600)
         rews = utility(agent)
 
-        return (vector, rews)
+        x = max(rews, self.max_reward)
+
+        return (vector, x)
 
 
     def info(self, node_index):
@@ -452,7 +456,7 @@ if __name__ == "__main__":
     env = TaxiEnv(map_to_numpy)
     tree = Tree(env, max_layer)
     tree.initialize()
-    tree.ucb_search(iterations=3000)
+    tree.ucb_search(iterations=200)
 
     # Store data
     r_dir = os.path.abspath(os.pardir)

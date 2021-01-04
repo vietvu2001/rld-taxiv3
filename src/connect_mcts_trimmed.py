@@ -31,7 +31,7 @@ map = [
     "+---------+",
 ]
 
-max_layer = 4
+max_layer = 1
 
 
 def utility(agent):
@@ -157,7 +157,7 @@ class Tree():
         self.num_nodes = 0
         self.root = None
         self.max_layer = max_layer
-        self.threshold = 9.25
+        self.threshold = 8
 
         self.agent = QAgent(self.env)
         self.agent.qlearn(500, show=False, render=False)
@@ -379,7 +379,7 @@ if __name__ == "__main__":
     env = TaxiEnv(map_to_numpy)
     tree = Tree(env, max_layer)
     tree.initialize()
-    tree.ucb_search(iterations=1500)
+    tree.ucb_search(iterations=50)
     r_dir = os.path.abspath(os.pardir)
     data_dir = os.path.join(r_dir, "data")
     txt_dir = os.path.join(data_dir, "connect_mcts_trimmed_result_{}.txt".format(tree.max_layer))
