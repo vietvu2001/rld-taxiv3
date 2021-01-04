@@ -26,6 +26,15 @@ Number of modifications and corresponding number of modifications:
 - 5: 2500 iterations
 - 6: 3000 iterations
 
+Provided thresholds for each number of modifications:
+
+- 1: 8
+- 2: 8
+- 3: 8.5
+- 4: 9
+- 5: 9.25
+- 6: 9.25
+
 Number of trials conducted: 5
 
 3. Batch Greedy (dissecting the MCTS tree): ```batch_greedy.py```
