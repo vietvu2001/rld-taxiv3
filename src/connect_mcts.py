@@ -141,7 +141,7 @@ class Node():
         # For example, a node on layer 1 cannot have modification index 31, because it cannot increase as it goes down path
         # List is increasing so lower bound is the modification index of node + 1
 
-        max_mod = len(tree.modifications) + self.layer - max_layer
+        max_mod = len(tree.modifications) + self.layer - tree.max_layer
         
         if self.parent is None:
             min_mod = 0
@@ -168,8 +168,8 @@ class Node():
         return ls_ret
 
 
-    def terminal(self):
-        return self.layer == max_layer
+    def terminal(self, tree):
+        return self.layer == tree.max_layer
 
     
     def fully_expanded(self, tree):
@@ -178,7 +178,7 @@ class Node():
 
 
 class Tree():
-    def __init__(self, env):
+    def __init__(self, env, max_layer):
         self.env = env
         self.modifications = []
         self.counter = 0
@@ -199,6 +199,12 @@ class Tree():
         self.agent = QAgent(self.env)
         self.agent.qlearn(500, show=False, render=False)
         self.env.reset()
+
+        self.max_layer = max_layer
+
+        # Storing tree's max reward with corresponding environment
+        self.max_reward = float("-inf")
+        self.opt_env = None
 
 
     def scale(self, x):
@@ -301,6 +307,9 @@ class Tree():
             if result > opt:
                 opt = result
                 child = c
+
+        chosen_mod = self.modifications[self.nodes[child].modification]
+        print(colored("Chosen child's modification: {}".format(chosen_mod), "red"))
         
         return child
 
@@ -309,7 +318,7 @@ class Tree():
         start = node_index
         simulate_env = copy.deepcopy(self.nodes[start].env)
         num_modifications_applied = len(self.env.walls) - len(simulate_env.walls) + len(simulate_env.special)
-        mods_left = max_layer - num_modifications_applied
+        mods_left = self.max_layer - num_modifications_applied
         
         # Choose from unused modifications, from start node
         # We know that tree.nodes[start] is a leaf, so there is no used modifications at start yet.
@@ -332,24 +341,28 @@ class Tree():
         agent = connected_qlearn(self.agent, simulate_env, 400)
         reward = utility(agent)
 
-        if reward > self.threshold:
+        if reward > self.threshold + 0.5:
             print(colored(a, "red"))
             for element in a:
                 start = self.add_node(element, start).index
+
+            if reward > self.max_reward:
+                self.max_reward = reward
+                self.opt_env = simulate_env
             
             return [self.scale(reward), start]
 
         return self.scale(reward)
 
     
-    def tree_policy(self, node_index):
+    def tree_policy(self, node_index, c1, c2):
         iter_index = node_index
-        while not self.nodes[iter_index].terminal():
+        while not self.nodes[iter_index].terminal(self):
             if not self.nodes[iter_index].fully_expanded(self):
                 return self.expand(iter_index)
             
             else:
-                iter_index = self.best_child(iter_index, 0.8, 0.8)
+                iter_index = self.best_child(iter_index, c1, c2)
         
         return iter_index
 
@@ -365,12 +378,15 @@ class Tree():
 
     def ucb_search(self, iterations):
         root_index = self.nodes[0].index
+        c1 = 1
+        c2 = 1
+
         for i in range(iterations):
             print(colored("Iteration {} begins!".format(i), "red"))
             
             # Return the index of the node newly expanded and play out to the terminal (or node at last layer)
 
-            leaf_index = self.tree_policy(root_index)
+            leaf_index = self.tree_policy(root_index, c1, c2)
             a = self.default_policy(leaf_index)
 
             if isinstance(a, list):
@@ -381,6 +397,8 @@ class Tree():
                 reward = a
 
             self.backup(leaf_index, reward)
+            print(colored("Number of nodes so far: {}".format(len(self.nodes)), "green"))
+            print(colored("Maximum reward seen so far: {}".format(self.max_reward), "green"))
             print("Iteration {} ends!".format(i))
             print()
 
@@ -388,14 +406,14 @@ class Tree():
     def greedy(self):
         walk = []
         start = 0
-        while self.nodes[start].layer < max_layer:
+        while self.nodes[start].layer < self.max_layer:
             if len(self.nodes[start].visited_children) != 0:
                 start = self.best_child(start, 0, 0, expanded=False)
                 mod_index = self.nodes[start].modification
                 walk.append(self.modifications[mod_index])
         
-        if len(walk) < max_layer:
-            print("MCTS insufficient to get {} modifications!".format(max_layer))
+        if len(walk) < self.max_layer:
+            print("MCTS insufficient to get {} modifications!".format(self.max_layer))
             return (walk, None)
 
         else:
@@ -404,6 +422,26 @@ class Tree():
             agent.qlearn(600, render=False)
             rews = utility(agent)
             return (walk, rews)
+
+    
+    def best_observed_choice(self):
+        vector = []
+        for wall in self.env.walls:
+            if wall not in self.opt_env.walls:
+                tup = (0, wall[0], wall[1])
+                vector.append(tup)
+
+        for cell in self.opt_env.special:
+            if cell not in self.env.special:
+                tup = (1, cell[0], cell[1])
+                vector.append(tup)
+
+        # Training to prevent errors arising from connected training
+        agent = QAgent(self.opt_env)
+        agent.qlearn(600)
+        rews = utility(agent)
+
+        return (vector, rews)
 
 
     def info(self, node_index):
@@ -419,25 +457,26 @@ class Tree():
         return dict_return
 
 
-map_to_numpy = np.asarray(map, dtype='c')
-env = TaxiEnv(map_to_numpy)
-tree = Tree(env)
-tree.initialize()
-tree.ucb_search(iterations=3500)
+if __name__ == "__main__":
+    map_to_numpy = np.asarray(map, dtype='c')
+    env = TaxiEnv(map_to_numpy)
+    tree = Tree(env, max_layer)
+    tree.initialize()
+    tree.ucb_search(iterations=3500)
 
-# Store data
-r_dir = os.path.abspath(os.pardir)
-data_dir = os.path.join(r_dir, "data")
-txt_dir = os.path.join(data_dir, "connect_mcts_result_{}.txt".format(max_layer))
+    # Store data
+    r_dir = os.path.abspath(os.pardir)
+    data_dir = os.path.join(r_dir, "data")
+    txt_dir = os.path.join(data_dir, "connect_mcts_result_{}.txt".format(tree.max_layer))
 
-a = tree.greedy()
+    a = tree.best_observed_choice()
 
-with open(txt_dir, "w") as file:
-    file.write("Modifications: ")
-    file.write(str(a[0]))
-    file.write("\n")
-    file.write("Utility: ")
-    if a[1] is not None:
-        file.write(str(a[1]))
-    else:
-        file.write("Utility not available")
+    with open(txt_dir, "w") as file:
+        file.write("Modifications: ")
+        file.write(str(a[0]))
+        file.write("\n")
+        file.write("Utility: ")
+        if a[1] is not None:
+            file.write(str(a[1]))
+        else:
+            file.write("Utility not available")

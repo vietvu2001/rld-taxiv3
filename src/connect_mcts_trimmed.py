@@ -214,6 +214,7 @@ class Tree():
         opt = float("-inf")
         child = None
         tup = None
+        
         for c in self.nodes[node_index].visited_children:
             scaled_reward = self.nodes[c].sum_reward / self.nodes[c].count
             exploration_term = const * math.sqrt(2 * math.log(self.nodes[node_index].count) / self.nodes[c].count)
@@ -381,10 +382,9 @@ if __name__ == "__main__":
     tree.ucb_search(iterations=1500)
     r_dir = os.path.abspath(os.pardir)
     data_dir = os.path.join(r_dir, "data")
-    csv_dir = os.path.join(data_dir, "tree_trimmed_{}.csv".format(tree.max_layer))
     txt_dir = os.path.join(data_dir, "connect_mcts_trimmed_result_{}.txt".format(tree.max_layer))
 
-    a = tree.greedy()
+    a = tree.best_observed_choice()
 
     with open(txt_dir, "w") as file:
         file.write("Modifications: ")

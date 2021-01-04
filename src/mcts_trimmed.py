@@ -159,6 +159,10 @@ class Tree():
         self.max_layer = max_layer
         self.threshold = 9.75
 
+        # Storing best reward and corresponding environment
+        self.max_reward = float("-inf")
+        self.opt_env = None
+
 
     def scale(self, x):
         return max(0, x - self.threshold)
@@ -204,6 +208,7 @@ class Tree():
 
         opt = float("-inf")
         child = None
+
         for c in self.nodes[node_index].visited_children:
             scaled_reward = self.nodes[c].sum_reward / self.nodes[c].count
             exploration_term = const * math.sqrt(2 * math.log(self.nodes[node_index].count) / self.nodes[c].count)
@@ -215,6 +220,9 @@ class Tree():
             if result > opt:
                 opt = result
                 child = c
+
+        chosen_mod = self.modifications[self.nodes[child].modification]
+        print(colored("Chosen child's modification: {}".format(chosen_mod), "red"))
         
         return child
 
@@ -252,25 +260,30 @@ class Tree():
         agent.qlearn(600, render=False)
         reward = utility(agent)
 
-        if reward > self.threshold:
+        if reward > self.threshold + 0.5:
             print(colored(a, "red"))
             print(colored(reward, "red"))
             for element in a:
                 start = self.add_node(element, start).index
+
+            # Update tree's max reward if possible
+            if reward > self.max_reward:
+                self.max_reward = reward
+                self.opt_env = simulate_env
             
             return [self.scale(reward), start]
 
         return self.scale(reward)
 
     
-    def tree_policy(self, node_index):
+    def tree_policy(self, node_index, c1, c2):
         iter_index = node_index
         while not self.nodes[iter_index].terminal(self):
             if not self.nodes[iter_index].fully_expanded(self):
                 return self.expand(iter_index)
             
             else:
-                iter_index = self.best_child(iter_index, 1, 1)
+                iter_index = self.best_child(iter_index, c1, c2)
         
         return iter_index
 
@@ -286,9 +299,12 @@ class Tree():
 
     def ucb_search(self, iterations):
         root_index = self.nodes[0].index
+        c1 = 1
+        c2 = 1
+
         for i in range(iterations):
             print(colored("Iteration {} begins!".format(i), "red"))
-            leaf_index = self.tree_policy(root_index)
+            leaf_index = self.tree_policy(root_index, c1, c2)
             a = self.default_policy(leaf_index)
             if isinstance(a, list):
                 leaf_index = a[1]
@@ -298,6 +314,8 @@ class Tree():
                 reward = a
 
             self.backup(leaf_index, reward)
+            print(colored("Number of nodes so far: {}".format(len(self.nodes)), "green"))
+            print(colored("Maximum reward seen so far: {}".format(self.max_reward), "green"))
             print("Iteration {} ends!".format(i))
             print()
 
@@ -322,6 +340,26 @@ class Tree():
             rews = utility(agent)
             return (walk, rews)
 
+    
+    def best_observed_choice(self):
+        vector = []
+        for wall in self.env.walls:
+            if wall not in self.opt_env.walls:
+                tup = (0, wall[0], wall[1])
+                vector.append(tup)
+
+        for cell in self.opt_env.special:
+            if cell not in self.env.special:
+                tup = (1, cell[0], cell[1])
+                vector.append(tup)
+
+        # Training to prevent errors arising from connected training
+        agent = QAgent(self.opt_env)
+        agent.qlearn(600)
+        rews = utility(agent)
+
+        return (vector, rews)
+
 
     def info(self, node_index):
         dict_return = {}
@@ -334,6 +372,7 @@ class Tree():
                     dict_return["special_cells"] = self.nodes[node_index].env.special
         
         return dict_return
+
 
 if __name__ == "__main__":
     map_to_numpy = np.asarray(map, dtype='c')
@@ -354,7 +393,7 @@ if __name__ == "__main__":
         for node in tree.nodes:
             writer.writerow(tree.info(node.index))
 
-    a = tree.greedy()
+    a = tree.best_observed_choice()
 
     with open(txt_dir, "w") as file:
         file.write("Modifications: ")
