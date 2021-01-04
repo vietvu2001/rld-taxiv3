@@ -6,10 +6,10 @@ Number of modifications and corresponding number of iterations:
 
 - 1: 50 iterations
 - 2: 200 iterations
-- 3: 1500 iterations
-- 4: 6000 iterations
-- 5: 7500 iterations
-- 6: 8000 iterations
+- 3: 1000 iterations
+- 4: 1500 iterations
+- 5: 2500 iterations
+- 6: 3000 iterations
 
 Number of trials conducted: 5
 
