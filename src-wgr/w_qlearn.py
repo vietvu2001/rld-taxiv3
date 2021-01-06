@@ -7,6 +7,7 @@ from contextlib import closing
 import copy
 
 import gym  # pylint: disable=import-error
+from termcolor import colored  # pylint: disable=import-error
 import time
 import random
 from collections import deque
@@ -25,23 +26,23 @@ class w_QAgent():
 
 
     def actions(self, state):
-        if state in self.env.special and state[1] in self.env.columns:
-            ls = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+        special_cell = (state[0], state[1]) in self.env.special
+        jump_cell = (state[0], state[1]) in self.env.jump_cells
+
+        if special_cell and jump_cell:
+            ls = [i for i in range(12)]
             return ls
 
-        elif state in self.env.special and state[1] not in self.env.columns:
-            ls = [0, 1, 2, 3, 4, 5, 6, 7]
+        elif special_cell:
+            ls = [i for i in range(8)]
             return ls
 
-        elif state[1] in self.env.columns and state not in self.env.special:
-            ls = [0, 1, 2, 3, 8, 9, 10, 11, 12, 13]
-
+        elif jump_cell:
+            ls = [i for i in range(4)] + [i for i in range(8, 12)]
             return ls
 
-        else:
-            ls = [0, 1, 2, 3]
-
-            return ls
+        ls = [i for i in range(4)]
+        return ls
 
 
     def get_q_value(self, state, action):
@@ -109,7 +110,7 @@ class w_QAgent():
             s = self.env.reset()
             t = 0
 
-            while True and t < 3000:
+            while True and t < 2000:
                 action = self.choose_action(s)
                 s_next, reward, done = self.env.step(action)
 
@@ -136,6 +137,9 @@ class w_QAgent():
                 
                 if render:
                     self.env.render()
+
+            # if self.epsilon >= 0.1:
+            #     self.epsilon *= 0.995
 
 
     def eval(self, show=True, fixed=None):
@@ -178,20 +182,28 @@ class w_QAgent():
 
         return
 
+if __name__ == "__main__":
+    env = WindyGridworld()
 
-env = WindyGridworld()
+    modified = copy.deepcopy(env)
+    modified.jump_cells.append((2, 2))
+    modified.jump_cells.append((1, 3))
+    modified.special.append((4, 4))
+    modified.special.append((5, 6))
 
-# Create a modified environment
+    start = time.time()
+    agent = w_QAgent(modified)
+    agent.qlearn(3000, render=False)
+    end = time.time()
 
-agent = w_QAgent(env)
-agent.qlearn(1500, render=False)
+    series = env.resettable_states()
+    vals = []
 
-series = env.resettable_states()
-vals = []
+    for state in series:
+        res = agent.eval(fixed=state, show=False)
+        vals.append(res[1])
 
-for state in series:
-    res = agent.eval(fixed=state, show=False)
-    vals.append(res[1])
+    print(colored(np.mean(vals), "red"))
+    agent.env.render()
 
-print(vals)
-env.render()
+    print(colored(end - start, "red"))
