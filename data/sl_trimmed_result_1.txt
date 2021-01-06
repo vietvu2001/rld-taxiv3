@@ -1,2 +1,0 @@
-Modifications: [(0, 1, 4)]
-Utility: 8.896666666666667
