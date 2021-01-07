@@ -192,7 +192,7 @@ if __name__ == "__main__":
     modified.special.append((5, 6))
 
     start = time.time()
-    agent = w_QAgent(modified)
+    agent = w_QAgent(env)
     agent.qlearn(3000, render=False)
     end = time.time()
 
