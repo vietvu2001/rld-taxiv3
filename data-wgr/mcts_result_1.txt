@@ -1,0 +1,4 @@
+Modifications: [(0, 5, 1)]
+Utility: 10.833333333333334
+Number of iterations: 120
+Threshold: 10.12
