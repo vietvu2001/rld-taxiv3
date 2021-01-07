@@ -39,15 +39,13 @@ def cell_frequency(agent):
     dict_return = {}
     for row in range(env.width):
         for col in range(env.length):
-            if (row, col) not in agent.env.dest:
-                dict_return[(row, col)] = 0
+            dict_return[(row, col)] = 0
 
     ls = agent.env.resettable_states()
     for i in range(len(ls)):
         states = agent.eval(show=False, fixed=ls[i])[2]
         for state in states:
-            if (state[0], state[1]) not in agent.env.dest:
-                dict_return[(state[0], state[1])] += 1
+            dict_return[(state[0], state[1])] += 1
 
     dict_return = sorted(dict_return.items(), key=lambda x: -x[1])
     return dict_return
