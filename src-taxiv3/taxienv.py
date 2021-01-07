@@ -99,6 +99,7 @@ class TaxiEnv():
                 new_pass_idx = self.dest.index(taxi_loc)
             else: # dropoff at wrong location
                 reward = -10
+                
         elif len(self.special) != 0 and taxi_loc in self.special:
             if action == 6:
                 propo = self.desc[state[0], 2 * state[1] + 2] == b":" or self.desc[state[0] + 1, 2 * state[1] + 2] == b":"
@@ -213,6 +214,7 @@ class TaxiEnv():
                 alternate.walls.remove(wall)
                 alternate.desc[wall[0]][wall[1]] = b":"
             return alternate
+
 
     def resettable_states(self):
         res = []
