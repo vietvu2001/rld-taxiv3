@@ -20,7 +20,7 @@ from w_qlearn import w_QAgent
 from termcolor import colored  # pylint: disable=import-error
 from w_heuristic import cell_frequency
 
-max_layer = 1
+max_layer = 2
 
 
 def utility(agent):
@@ -239,7 +239,7 @@ class Tree():
         for element in a:
             mod = self.modifications[element]
             if mod[0] == 0:
-                simulate_env.jump_cells((mod[1], mod[2]))
+                simulate_env.jump_cells.append((mod[1], mod[2]))
             elif mod[0] == 1:
                 simulate_env.special.append((mod[1], mod[2]))
         
@@ -332,7 +332,7 @@ class Tree():
     def best_observed_choice(self):
         vector = []
         for jump in self.opt_env.jump_cells:
-            if jump not in self.opt_env.walls:
+            if jump not in self.env.jump_cells:
                 tup = (0, jump[0], jump[1])
                 vector.append(tup)
 
@@ -363,7 +363,7 @@ class Tree():
 
 
 if __name__ == "__main__":
-    num_iters = 120
+    num_iters = 500
     env = WindyGridworld()
     tree = Tree(env, max_layer)
     tree.initialize()
