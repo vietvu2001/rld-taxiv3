@@ -466,3 +466,5 @@ if __name__ == "__main__":
 
         file.write("\n")
         file.write("Number of iterations: {}".format(num_iters))
+        file.write("\n")
+        file.write("Threshold: {}".format(tree.threshold))

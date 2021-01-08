@@ -126,7 +126,7 @@ class WindyGridworld():
             next_state = (max(min(i + 2 - self.wind[j], self.max_row), 0), j, f_addr, s_addr)
 
         elif action == 9 and jump_cell:
-            next_state = (max(i - 1 - self.wind[j], 0), j, f_addr, s_addr)
+            next_state = (max(i - 2 - self.wind[j], 0), j, f_addr, s_addr)
 
         elif action == 10 and jump_cell:
             next_state = (max(i - self.wind[j], 0), min(j + 2, self.max_col), f_addr, s_addr)
