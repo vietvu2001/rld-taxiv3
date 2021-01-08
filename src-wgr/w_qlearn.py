@@ -20,7 +20,7 @@ class w_QAgent():
     def __init__(self, env):
         self.env = env
         self.alpha = 0.5
-        self.epsilon = 0.1
+        self.epsilon = 1
         self.rate = 1
         self.q = {}
 
@@ -138,8 +138,8 @@ class w_QAgent():
                 if render:
                     self.env.render()
 
-            # if self.epsilon >= 0.1:
-            #     self.epsilon *= 0.995
+            if self.epsilon >= 0.1:
+                self.epsilon *= 0.995
 
 
     def eval(self, show=True, fixed=None):
@@ -188,11 +188,10 @@ if __name__ == "__main__":
     modified = copy.deepcopy(env)
     modified.jump_cells.append((2, 2))
     modified.jump_cells.append((1, 3))
-    modified.special.append((4, 4))
-    modified.special.append((5, 6))
+    modified.special.append((3, 6))
 
     start = time.time()
-    agent = w_QAgent(env)
+    agent = w_QAgent(modified)
     agent.qlearn(3000, render=False)
     end = time.time()
 
@@ -202,6 +201,7 @@ if __name__ == "__main__":
     for state in series:
         res = agent.eval(fixed=state, show=False)
         vals.append(res[1])
+        print(res[0])
 
     print(colored(np.mean(vals), "red"))
     agent.env.render()

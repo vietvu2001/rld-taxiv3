@@ -20,7 +20,7 @@ from w_qlearn import w_QAgent
 from termcolor import colored  # pylint: disable=import-error
 from w_heuristic import cell_frequency
 
-max_layer = 1
+max_layer = 3
 
 
 def utility(agent):
@@ -145,7 +145,7 @@ class Tree():
         self.num_nodes = 0
         self.root = None
         self.max_layer = max_layer
-        self.threshold = 10.12
+        self.threshold = 11
 
         # Storing best reward and corresponding environment
         self.max_reward = float("-inf")
@@ -363,7 +363,7 @@ class Tree():
 
 
 if __name__ == "__main__":
-    num_iters = 120
+    num_iters = 1000
     env = WindyGridworld()
     tree = Tree(env, max_layer)
     tree.initialize()

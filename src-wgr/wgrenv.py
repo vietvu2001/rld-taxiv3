@@ -199,21 +199,3 @@ class WindyGridworld():
             outboard += outline
         outboard += '\n'
         outfile.write(outboard)
-
-'''
-env = WindyGridworld()
-env.reset()
-env.current = (1, 0, 2, 1)
-env.render()
-
-actions = [2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 1, 3, 3]
-
-s = None
-
-for a in actions:
-    s = env.step(a)
-
-print(env.current)
-print(s)
-
-env.render()'''

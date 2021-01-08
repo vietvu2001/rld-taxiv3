@@ -19,7 +19,7 @@ from wgrenv import WindyGridworld
 from w_qlearn import w_QAgent
 from termcolor import colored  # pylint: disable=import-error
 
-max_layer = 4
+max_layer = 1
 
 def utility(agent):
     # Mean of rewards coming from every resettable state
@@ -181,7 +181,7 @@ class Tree():
         
         self.num_nodes = 0
         self.root = None
-        self.threshold = 11
+        self.threshold = 10.12
 
         self.max_layer = max_layer
 
@@ -441,7 +441,7 @@ class Tree():
 
 
 if __name__ == "__main__":
-    num_iters = 2000
+    num_iters = 120
     env = WindyGridworld()
     tree = Tree(env, max_layer)
     tree.initialize()
