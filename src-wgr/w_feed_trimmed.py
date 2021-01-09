@@ -22,16 +22,17 @@ from collections import deque
 from wgrenv import WindyGridworld
 from w_qlearn import w_QAgent
 from termcolor import colored  # pylint: disable=import-error
+from w_heuristic import cell_frequency
 
 env = WindyGridworld()  # reference environment
 
 input_data = []
 output_data = []
-num_mods = 2 # specify here
+num_mods = 3  # specify here
 
 r_dir = os.path.abspath(os.pardir)
-data_dir = os.path.join(r_dir, "data-wgr")
-file_dir = os.path.join(data_dir, "data_{}.csv".format(num_mods))
+data_dir = os.path.join(r_dir, "data")
+file_dir = os.path.join(data_dir, "data_trimmed_{}.csv".format(num_mods))
 
 # Read data
 with open(file_dir, "r") as f:
@@ -58,7 +59,7 @@ model.add(BatchNormalization())
 model.add(Dense(64, activation="relu"))
 model.add(Dense(1))
 
-model.compile(optimizer=Adam(learning_rate=0.001), loss = 'mae')
+model.compile(optimizer=Adam(learning_rate=0.005), loss = 'mae')
 
 # Training
 TEST_SIZE = 0.2
@@ -217,7 +218,7 @@ def make_env(env, mod_seq):
     locations = mod_seq
     for element in locations:
         if element[0] == 0:
-            ref_env.jump_cells.append((element[1], element[2]))
+            ref_env = ref_env.transition([(element[1], element[2])])
         else:
             ref_env.special.append((element[1], element[2]))
     
@@ -225,27 +226,13 @@ def make_env(env, mod_seq):
 
 
 def utility(agent):
-    rewards = 0
-    count = 0
-
+    rewards = []
     starts = agent.env.resettable_states()
     for point in starts:
         r = agent.eval(fixed=point, show=False)[1]
-        rewards += r
-        count += 1
+        rewards.append(r)
 
-    return rewards / count
-
-
-modifications = []
-for row in range(env.width):
-    for col in range(env.length):
-        modifications.append((0, row, col))
-
-for row in range(env.width):
-    for col in range(env.length):
-        modifications.append((1, row, col))
-
+    return np.mean(rewards)
 
 
 def get_ordered_sequence(list, k):
@@ -268,6 +255,20 @@ if num_mods == 6:
 
 else:
     num_trials = int(1e+7)
+
+
+agent = w_QAgent(env)
+agent.qlearn(3000, show=False)
+cell_dict = cell_frequency(agent)
+modifications = []
+
+for element in cell_dict:
+    if element[1] != 0:
+        row, col = element[0]
+        modifications.append((0, row, col))
+        modifications.append((1, row, col))
+
+modifications.sort()
 
 # Initialize and build heap
 sz = min(12 * num_mods, len(x_test))
@@ -321,13 +322,11 @@ for element in range(len(h.array)):
         opt_seq = seq
 
 r_dir = os.path.abspath(os.pardir)
-data_dir = os.path.join(r_dir, "data-wgr")
-file_dir = os.path.join(data_dir, "sl_result_{}.txt".format(num_mods))
+data_dir = os.path.join(r_dir, "data")
+file_dir = os.path.join(data_dir, "sl_trimmed_result_{}.txt".format(num_mods))
 with open(file_dir, "w") as file:
     file.write("Modifications: ")
     file.write(str(opt_seq))
     file.write("\n")
     file.write("Utility: ")
     file.write(str(opt_val))
-    file.write("\n")
-    file.write("Number of iterations: {}".format(len(input_data)))
