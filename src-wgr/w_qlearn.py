@@ -186,9 +186,8 @@ if __name__ == "__main__":
     env = WindyGridworld()
 
     modified = copy.deepcopy(env)
-    modified.jump_cells.append((2, 2))
-    modified.jump_cells.append((1, 3))
-    modified.special.append((3, 6))
+    modified.jump_cells.append((4, 3))
+    modified.special.append((3, 5))
 
     start = time.time()
     agent = w_QAgent(modified)
@@ -201,7 +200,6 @@ if __name__ == "__main__":
     for state in series:
         res = agent.eval(fixed=state, show=False)
         vals.append(res[1])
-        print(res[0])
 
     print(colored(np.mean(vals), "red"))
     agent.env.render()

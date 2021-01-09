@@ -92,7 +92,7 @@ def batch_greedy(env, num_mods, num_mods_per_run, ls_num_iters):
 
 
 num_mods = 4
-num_mods_per_run = 1
+num_mods_per_run = 2
 ls = num_iters[0 : num_mods_per_run]
 ans = batch_greedy(env, num_mods, num_mods_per_run, ls)
 

@@ -20,7 +20,7 @@ from w_qlearn import w_QAgent
 from termcolor import colored  # pylint: disable=import-error
 from w_heuristic import cell_frequency
 
-max_layer = 4
+max_layer = 2
 
 
 def utility(agent):
@@ -133,7 +133,7 @@ class Tree():
         self.nodes = []
 
         agent = w_QAgent(env)
-        agent.qlearn(2000 + 200 * (max_layer - 1), render=False)
+        agent.qlearn(2200 + 200 * (max_layer - 1), render=False)
         cell_dict = cell_frequency(agent)
         
         for element in cell_dict:
@@ -146,7 +146,7 @@ class Tree():
         self.num_nodes = 0
         self.root = None
         self.max_layer = max_layer
-        self.threshold = 11
+        self.threshold = 10.12
 
         # Storing best reward and corresponding environment
         self.max_reward = float("-inf")
@@ -246,7 +246,7 @@ class Tree():
         
         # Training
         agent = w_QAgent(simulate_env)
-        agent.qlearn(2000 + 200 * (self.max_layer - 1), render=False)
+        agent.qlearn(2200 + 200 * (self.max_layer - 1), render=False)
         reward = utility(agent)
 
         if reward > self.threshold:
@@ -325,7 +325,7 @@ class Tree():
         else:
             modified = make_env(self.env, walk)
             agent = w_QAgent(modified)
-            agent.qlearn(2000 + 200 * (self.max_layer - 1), render=False)
+            agent.qlearn(2200 + 200 * (self.max_layer - 1), render=False)
             rews = utility(agent)
             return (walk, rews)
 
@@ -344,10 +344,12 @@ class Tree():
 
         # Training to prevent errors arising from connected training
         agent = w_QAgent(self.opt_env)
-        agent.qlearn(2000 + 200 * (self.max_layer - 1))
+        agent.qlearn(3500)
         rews = utility(agent)
 
-        return (vector, rews)
+        x = max(rews, self.max_reward)
+
+        return (vector, x)
 
 
     def info(self, node_index):
@@ -364,7 +366,7 @@ class Tree():
 
 
 if __name__ == "__main__":
-    num_iters = 2000
+    num_iters = 200
     env = WindyGridworld()
     tree = Tree(env, max_layer)
     tree.initialize()
