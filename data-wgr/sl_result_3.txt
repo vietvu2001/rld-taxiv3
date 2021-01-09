@@ -1,0 +1,3 @@
+Modifications: [(0, 1, 3), (0, 5, 1), (1, 3, 6)]
+Utility: 11.547619047619047
+Number of iterations: 1000
