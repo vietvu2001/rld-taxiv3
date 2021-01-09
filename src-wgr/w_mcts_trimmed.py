@@ -20,7 +20,7 @@ from w_qlearn import w_QAgent
 from termcolor import colored  # pylint: disable=import-error
 from w_heuristic import cell_frequency
 
-max_layer = 3
+max_layer = 4
 
 
 def utility(agent):
@@ -136,11 +136,12 @@ class Tree():
         agent.qlearn(2000 + 200 * (max_layer - 1), render=False)
         cell_dict = cell_frequency(agent)
         
-        for element in cell_dict[0 : 18]:
-            self.modifications.append((0, element[0][0], element[0][1]))
+        for element in cell_dict:
+            if element[1] != 0:
+                self.modifications.append((0, element[0][0], element[0][1]))
+                self.modifications.append((1, element[0][0], element[0][1]))
 
-        for element in cell_dict[0 : 18]:
-            self.modifications.append((1, element[0][0], element[0][1]))
+        self.modifications.sort()
         
         self.num_nodes = 0
         self.root = None
@@ -363,7 +364,7 @@ class Tree():
 
 
 if __name__ == "__main__":
-    num_iters = 1000
+    num_iters = 2000
     env = WindyGridworld()
     tree = Tree(env, max_layer)
     tree.initialize()

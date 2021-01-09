@@ -55,5 +55,9 @@ if __name__ == "__main__":
     agent = w_QAgent(env)
     agent.qlearn(3000, render=False)
     cell_dict = cell_frequency(agent)
+    count = 0
     for elem in cell_dict:
-        print(elem)
+        if elem[1] == 0:
+            count += 1
+
+    print(count)
