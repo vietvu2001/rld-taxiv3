@@ -28,10 +28,10 @@ env = WindyGridworld()  # reference environment
 
 input_data = []
 output_data = []
-num_mods = 3  # specify here
+num_mods = 1  # specify here
 
 r_dir = os.path.abspath(os.pardir)
-data_dir = os.path.join(r_dir, "data")
+data_dir = os.path.join(r_dir, "data-wgr")
 file_dir = os.path.join(data_dir, "data_trimmed_{}.csv".format(num_mods))
 
 # Read data
@@ -218,7 +218,7 @@ def make_env(env, mod_seq):
     locations = mod_seq
     for element in locations:
         if element[0] == 0:
-            ref_env = ref_env.transition([(element[1], element[2])])
+            ref_env.jump_cells.append((element[1], element[2]))
         else:
             ref_env.special.append((element[1], element[2]))
     
@@ -322,7 +322,7 @@ for element in range(len(h.array)):
         opt_seq = seq
 
 r_dir = os.path.abspath(os.pardir)
-data_dir = os.path.join(r_dir, "data")
+data_dir = os.path.join(r_dir, "data-wgr")
 file_dir = os.path.join(data_dir, "sl_trimmed_result_{}.txt".format(num_mods))
 with open(file_dir, "w") as file:
     file.write("Modifications: ")
@@ -330,3 +330,5 @@ with open(file_dir, "w") as file:
     file.write("\n")
     file.write("Utility: ")
     file.write(str(opt_val))
+    file.write("\n")
+    file.write("Number of iterations: {}".format(len(input_data)))
