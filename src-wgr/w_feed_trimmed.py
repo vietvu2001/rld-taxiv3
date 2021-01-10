@@ -23,12 +23,13 @@ from wgrenv import WindyGridworld
 from w_qlearn import w_QAgent
 from termcolor import colored  # pylint: disable=import-error
 from w_heuristic import cell_frequency
+import itertools
 
 env = WindyGridworld()  # reference environment
 
 input_data = []
 output_data = []
-num_mods = 1  # specify here
+num_mods = 4  # specify here
 
 r_dir = os.path.abspath(os.pardir)
 data_dir = os.path.join(r_dir, "data-wgr")
@@ -276,19 +277,16 @@ h = Heap(model, x_test[0 : sz], sz)
 h.build_heap()
 
 
-ls = []
-for i in range(num_trials):
-    seq = get_ordered_sequence(modifications, k=num_mods)
-    seq = np.array(seq)
-    seq = np.reshape(seq, (num_mods * 3))
-
-    ls.append(seq)
+ls = list(itertools.combinations(modifications, num_mods))
+for i in range(len(ls)):
+    ls[i] = np.array(ls[i])
+    ls[i] = np.reshape(ls[i], (num_mods * 3))
 
 ls = np.array(ls)
 vector = model.predict(ls)
 
 
-for i in range(num_trials):
+for i in range(len(ls)):
     val = vector[i][0]
     if val > h.peek():
         checkls = [elem.seq for elem in h.array]

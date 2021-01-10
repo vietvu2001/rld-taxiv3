@@ -22,6 +22,7 @@ from collections import deque
 from wgrenv import WindyGridworld
 from w_qlearn import w_QAgent
 from termcolor import colored  # pylint: disable=import-error
+import itertools
 
 env = WindyGridworld()  # reference environment
 
@@ -275,13 +276,10 @@ h = Heap(model, x_test[0 : sz], sz)
 h.build_heap()
 
 
-ls = []
-for i in range(num_trials):
-    seq = get_ordered_sequence(modifications, k=num_mods)
-    seq = np.array(seq)
-    seq = np.reshape(seq, (num_mods * 3))
-
-    ls.append(seq)
+ls = list(itertools.combinations(modifications, num_mods))
+for i in range(len(ls)):
+    ls[i] = np.array(ls[i])
+    ls[i] = np.reshape(ls[i], (num_mods * 3))
 
 ls = np.array(ls)
 vector = model.predict(ls)

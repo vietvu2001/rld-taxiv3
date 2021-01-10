@@ -21,36 +21,23 @@ import matplotlib.pyplot as plt  # pylint: disable=import-error
 from termcolor import colored  # pylint: disable=import-error
 import multiprocessing as mp
 from multiprocessing import Manager
+import itertools
 
 env = WindyGridworld()  # reference environment
 input_data = []
 output_data = []
 
-modifications = []
-for row in range(env.width):
-    for col in range(env.length):
-        modifications.append((0, (row, col)))
 
-for row in range(env.width):
-    for col in range(env.length):
-        modifications.append((1, (row, col)))
-
-
-def simulate_env(env, num_changes):
-    features = []
-    mods = random.sample(modifications, k=num_changes)
-    result = copy.deepcopy(env)
-
-    for change in mods:
-        if change[0] == 0:  # walls
-            result.jump_cells.append(change[1])
-        elif change[0] == 1:  # cells
-            result.special.append(change[1])
-
-        features.append((change[0], change[1][0], change[1][1]))
-
-    features = sorted(features)
-    return [result, features] 
+def make_env(env, mod_seq):
+    ref_env = copy.deepcopy(env)
+    locations = mod_seq
+    for element in locations:
+        if element[0] == 0:
+            ref_env.jump_cells.append((element[1], element[2]))
+        else:
+            ref_env.special.append((element[1], element[2]))
+    
+    return ref_env
 
 
 def utility(agent):
@@ -74,7 +61,7 @@ def qlearn_as_func(agent, env, number, agents, insert_position=-1):
 data = []
 
 if __name__ == "__main__":
-    rounds = 100
+    rounds = 200
     mp.set_start_method = "spawn"
     num_processes = 10
     processes = []
@@ -84,14 +71,51 @@ if __name__ == "__main__":
         agents.append(0)  # keeper
 
     categories = []
-    num_mods = 3
+    num_mods = 4
+
+    modifications = []
+    for row in range(env.width):
+        for col in range(env.length):
+            modifications.append((0, (row, col)))
+
+    for row in range(env.width):
+        for col in range(env.length):
+            modifications.append((1, (row, col)))
+
+    ls = None
+
+    if num_mods == 1:
+        ls = [[elem] for elem in modifications]
+
+    else:
+        ls = list(itertools.combinations(modifications, num_mods))
+
+    if num_mods > 1:
+        for i in range(len(ls)):
+            ls[i] = list(ls[i])
+            ls[i].sort()
+
+    random.shuffle(ls)
+
+    if num_mods == 1:
+        chosen_vectors = ls
+
+    else:
+        chosen_vectors = ls[0 : (rounds * num_processes)]
+
 
     for iter in range(rounds):
         print(colored("Data addition round {} begins!".format(iter), "red"))
         for i in range(num_processes):
-            results = simulate_env(env, num_mods)
-            modified = results[0]
-            categories.append(results[1])
+            if i + iter * num_processes >= len(chosen_vectors):
+                break
+
+            # results = simulate_env(env, num_mods)
+            v = chosen_vectors[i + iter * num_processes]
+            # modified = results[0]
+            modified = make_env(env, v)
+            # categories.append(results[1])
+            categories.append(v)
             agent = w_QAgent(modified)
             p = mp.Process(target=qlearn_as_func, args=(agent, modified, i, agents, i + iter * num_processes))
             p.start()
@@ -105,8 +129,9 @@ if __name__ == "__main__":
 
     
     for i in range(len(agents)):
-        ut = utility(agents[i])
-        data.append((categories[i], ut))
+        if agents[i] != 0:
+            ut = utility(agents[i])
+            data.append((categories[i], ut))
 
     r_dir = os.path.abspath(os.pardir)
     data_dir = os.path.join(r_dir, "data-wgr")
