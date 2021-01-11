@@ -181,7 +181,7 @@ class Tree():
         
         self.num_nodes = 0
         self.root = None
-        self.threshold = 11
+        self.threshold = 10.75
 
         self.max_layer = max_layer
 
@@ -320,7 +320,7 @@ class Tree():
         
         # Training
         agent = w_QAgent(simulate_env)
-        agent.qlearn(2200 + 200 * (self.max_layer - 1), render=False)
+        agent.qlearn(3000, render=False)
         reward = utility(agent)
 
         if reward > self.threshold:
@@ -363,8 +363,8 @@ class Tree():
 
     def ucb_search(self, iterations):
         root_index = self.nodes[0].index
-        c1 = 1
-        c2 = 1
+        c1 = 0.6
+        c2 = 0.6
 
         for i in range(iterations):
             print(colored("Iteration {} begins!".format(i), "red"))
@@ -400,7 +400,7 @@ class Tree():
         else:
             modified = make_env(self.env, walk)
             agent = w_QAgent(modified)
-            agent.qlearn(2200 + 200 * (self.max_layer - 1), render=False)
+            agent.qlearn(3000, render=False)
             rews = utility(agent)
             return (walk, rews)
 
@@ -441,7 +441,7 @@ class Tree():
 
 
 if __name__ == "__main__":
-    num_iters = 2000
+    num_iters = 3000
     env = WindyGridworld()
     tree = Tree(env, max_layer)
     tree.initialize()
