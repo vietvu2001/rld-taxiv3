@@ -291,7 +291,6 @@ for i in range(len(ls)):
 ls = np.array(ls)
 vector = model.predict(ls)
 
-
 for i in range(len(ls)):
     val = vector[i][0]
     if val > h.peek():
