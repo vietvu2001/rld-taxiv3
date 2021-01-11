@@ -61,7 +61,7 @@ def qlearn_as_func(agent, env, number, agents, insert_position=-1):
 data = []
 
 if __name__ == "__main__":
-    rounds = 200
+    rounds = 300
     mp.set_start_method = "spawn"
     num_processes = 10
     processes = []
@@ -76,11 +76,11 @@ if __name__ == "__main__":
     modifications = []
     for row in range(env.width):
         for col in range(env.length):
-            modifications.append((0, (row, col)))
+            modifications.append((0, row, col))
 
     for row in range(env.width):
         for col in range(env.length):
-            modifications.append((1, (row, col)))
+            modifications.append((1, row, col))
 
     ls = None
 

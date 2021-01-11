@@ -53,20 +53,26 @@ print(num_mods == shape_tuple[0] // 3)
 # Build model
 model = Sequential()
 model.add(Dense(32, input_shape=(num_mods * 3, ), activation="relu"))
-model.add(Dense(128, activation="relu"))
+model.add(Dense(128, activation="tanh"))
 model.add(BatchNormalization())
 model.add(Dense(256, activation="relu"))
 model.add(BatchNormalization())
 model.add(Dense(64, activation="relu"))
 model.add(Dense(1))
 
-model.compile(optimizer=Adam(learning_rate=0.005), loss = 'mae')
+model.compile(optimizer=Adam(learning_rate=0.0002), loss = 'mae')
 
 # Training
 TEST_SIZE = 0.2
 x_train, x_test, y_train, y_test = train_test_split(np.array(input_data), np.array(output_data), test_size=TEST_SIZE)
 
-model.fit(x_train, y_train, epochs=600)
+model.fit(x_train, y_train, epochs=400)
+model.evaluate(x_test, y_test, verbose=2)
+
+# Retrain with different split
+x_train, x_test, y_train, y_test = train_test_split(np.array(input_data), np.array(output_data), test_size=TEST_SIZE)
+
+model.fit(x_train, y_train, epochs=400)
 model.evaluate(x_test, y_test, verbose=2)
 
 
