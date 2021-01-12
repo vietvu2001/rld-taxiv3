@@ -270,13 +270,6 @@ def get_ordered_sequence(list, k):
         
     return res
 
-
-if num_mods == 6:
-    num_trials = int(4e+7)
-
-else:
-    num_trials = int(1e+7)
-
 # Initialize and build heap
 sz = min(12 * num_mods, len(x_test))
 h = Heap(model, x_test[0 : sz], sz)
