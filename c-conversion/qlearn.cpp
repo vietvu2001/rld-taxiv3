@@ -7,6 +7,7 @@
 #include <numeric>
 #include <utility>
 #include <typeinfo>
+#include <unistd.h>
 
 #include "wenv.h"
 using namespace std;
@@ -45,11 +46,16 @@ int choice(vector <int> v, vector <double> probs)
 struct w_QAgent
 {
     WindyGridworld env;
-    double alpha = 0.25;
-    double epsilon = 0.1;
+    double alpha = 0.1;
+    double epsilon = 0.3;
     double rate = 1.0;
 
     map <vector<int>, map <int, double>> q;
+
+    w_QAgent(WindyGridworld e)
+    {
+        env = e;
+    }
 
     vector <int> actions(vector <int> state)
     {
@@ -291,11 +297,17 @@ struct w_QAgent
 
 int main()
 {
-    srand(time(NULL));
-    w_QAgent agent;
+    srand(time(NULL) ^ getpid());
+    WindyGridworld env;
+    vector <int> pos{3, 6};
+    vector <int> p{1, 5};
+    env.jump_cells.push_back(p);
+    env.special.push_back(pos);
+
+    w_QAgent agent(env);
 
     clock_t start = clock();
-    agent.qlearn(3000, true, -1, false);
+    agent.qlearn(5000, true, -1, false);
     clock_t end = clock();
 
     vector <vector <int>> ls = agent.env.resettable_states();
@@ -315,8 +327,9 @@ int main()
         sum += values[i];
     }
 
-    cout << sum / values.size() << endl;
+    cout << (double)sum / values.size() << endl;
     cout << values.size() << endl;
+    cout << agent.q.size() << endl;
 
     return 0;
 }
