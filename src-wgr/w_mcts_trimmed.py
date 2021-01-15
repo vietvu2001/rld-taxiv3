@@ -133,7 +133,7 @@ class Tree():
         self.nodes = []
 
         agent = w_QAgent(env)
-        agent.qlearn(2200 + 200 * (max_layer - 1), render=False)
+        agent.qlearn(3000, render=False)
         cell_dict = cell_frequency(agent)
         
         for element in cell_dict:
@@ -246,7 +246,7 @@ class Tree():
         
         # Training
         agent = w_QAgent(simulate_env)
-        agent.qlearn(2200 + 200 * (self.max_layer - 1), render=False)
+        agent.qlearn(3000, show=False)
         reward = utility(agent)
 
         if reward > self.threshold:
@@ -325,7 +325,7 @@ class Tree():
         else:
             modified = make_env(self.env, walk)
             agent = w_QAgent(modified)
-            agent.qlearn(2200 + 200 * (self.max_layer - 1), render=False)
+            agent.qlearn(3000, render=False)
             rews = utility(agent)
             return (walk, rews)
 

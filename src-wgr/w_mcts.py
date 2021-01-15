@@ -320,7 +320,7 @@ class Tree():
         
         # Training
         agent = w_QAgent(simulate_env)
-        agent.qlearn(3000, render=False)
+        agent.qlearn(3000, show=False)
         reward = utility(agent)
 
         if reward > self.threshold:
@@ -443,7 +443,7 @@ class Tree():
 if __name__ == "__main__":
     max_layer = int(sys.argv[1])
     num_iters = int(sys.argv[2])
-    
+
     env = WindyGridworld()
     tree = Tree(env, max_layer)
     tree.initialize()
