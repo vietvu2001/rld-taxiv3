@@ -12,11 +12,13 @@ using namespace std;
 
 int randint(int min, int max)
 {
+    int seed = rand();
+    srand(seed);
     int x = experimental::randint(min, max);
     return x;
 }
 
-holder::holder(vector <int> x, int y, bool z)
+holder::holder(vector <int> x, float y, bool z)
 {
     s = x;
     r = y;
@@ -78,7 +80,7 @@ holder WindyGridworld::step(int action)
     int next_col = j;
 
     // Present reward
-    int reward = -1;
+    float reward = -1.0;
 
     // Preprocess conditionals
     bool special_cell = false;
@@ -209,7 +211,7 @@ holder WindyGridworld::step(int action)
     current = next_state;
     bool done = terminal(next_state);
 
-    if (done) reward = 20;
+    if (done) reward = 20.0;
 
     holder h(next_state, reward, done);
 

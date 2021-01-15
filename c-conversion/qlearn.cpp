@@ -6,21 +6,21 @@
 #include <bits/stdc++.h>
 #include <numeric>
 #include <utility>
-#include <typeinfo>
 #include <unistd.h>
+#include <cstdlib>
 
 #include "wenv.h"
 using namespace std;
 
-int choice(vector <int> v, vector <double> probs)
+int choice(vector <int> v, vector <float> probs)
 {
     assert(v.size() == probs.size());
 
     // Random number
-    double val = (double)rand() / RAND_MAX;
+    float val = (float)rand() / RAND_MAX;
 
     // Partial sums (cumulative sums)
-    double result[probs.size()];
+    float result[probs.size()];
 
     partial_sum(probs.begin(), probs.end(), result);
 
@@ -46,11 +46,11 @@ int choice(vector <int> v, vector <double> probs)
 struct w_QAgent
 {
     WindyGridworld env;
-    double alpha = 0.1;
-    double epsilon = 0.3;
-    double rate = 1.0;
+    float alpha = 0.5;
+    float epsilon = 1;
+    float rate = 1.0;
 
-    map <vector<int>, map <int, double>> q;
+    map <vector<int>, map <int, float>> q;
 
     w_QAgent(WindyGridworld e)
     {
@@ -132,16 +132,16 @@ struct w_QAgent
         return actions;
     }
 
-    double get_q_value(vector <int> state, int action)
+    float get_q_value(vector <int> state, int action)
     {
-        map <vector<int>, map <int, double>>::iterator it;
+        map <vector<int>, map <int, float>>::iterator it;
         it = q.find(state);
 
         if (it == q.end()) return 0.0;
 
         else
         {
-            map <int, double>::iterator it_1;
+            map <int, float>::iterator it_1;
             it_1 = q[state].find(action);
 
             if (it_1 == q[state].end()) return 0.0;
@@ -150,20 +150,20 @@ struct w_QAgent
         }
     }
 
-    double best_reward_state(vector <int> state)
+    float best_reward_state(vector <int> state)
     {
-        map <vector<int>, map <int, double>>::iterator it;
+        map <vector<int>, map <int, float>>::iterator it;
         it = q.find(state);
 
         if (it == q.end()) return 0.0;
 
         else
         {
-            double opt_val = q[state].begin()->second;
+            float opt_val = q[state].begin()->second;
 
             for (auto it_1 = q[state].begin(); it_1 != q[state].end(); it_1++)
             {
-                double x = it_1->second;
+                float x = it_1->second;
                 if (x > opt_val)
                 {
                     opt_val = x;
@@ -172,27 +172,27 @@ struct w_QAgent
 
             if (q[state].size() == actions(state).size()) return opt_val;
 
-            else return max(opt_val, 0.0);
+            else return max(opt_val, (float)0);
         }
     }
 
     int choose_action(vector <int> state, bool prob=true)
     {
         vector <int> vals{0, 1};
-        vector <double> probs{epsilon, 1 - epsilon};
+        vector <float> probs{epsilon, 1 - epsilon};
 
         int r = choice(vals, probs);
         vector <int> ls = actions(state);
 
         if (!prob || r == 1)
         {
-            double opt_val = (double)INT_MIN;
+            float opt_val = (float)INT_MIN;
             int action = -1;
             int N = ls.size();
 
             for (int i = 0; i < N; i++)
             {
-                double value = get_q_value(state, ls[i]);
+                float value = get_q_value(state, ls[i]);
                 if (value > opt_val)
                 {
                     opt_val = value;
@@ -215,6 +215,7 @@ struct w_QAgent
     {
         for (int i = 0; i < num_episodes; i++)
         {
+            // srand(i);
             if (show && (i % 100 == 0 || i == num_episodes - 1))
             {
                 if (number == -1) printf("Episode %d begins!\n", i);
@@ -227,15 +228,16 @@ struct w_QAgent
 
             while (t < 2000)
             {
+                if (t % 100 == 0) srand(2000 * i + t);
                 int action = choose_action(s);
                 holder h = env.step(action);
 
                 vector <int> s_next = h.s;
-                double reward = (double)h.r;
+                float reward = h.r;
                 bool done = h.d;
 
-                double future_rewards_estimated = best_reward_state(s_next);
-                double old_q = get_q_value(s, action);
+                float future_rewards_estimated = best_reward_state(s_next);
+                float old_q = get_q_value(s, action);
 
                 // Update q-value
                 q[s][action] = old_q + alpha * (reward + rate * future_rewards_estimated - old_q);
@@ -256,9 +258,11 @@ struct w_QAgent
                 if (render) env.render();
             }
         }
+
+        if (epsilon > 0.05) epsilon *= 0.995;
     }
 
-    pair <double, vector <vector <int>>> eval(bool display, vector <int> fixed)
+    pair <float, vector <vector <int>>> eval(bool display, vector <int> fixed)
     {
         vector <int> s = env.reset();
 
@@ -269,7 +273,7 @@ struct w_QAgent
         vector <vector <int>> states{s};
 
         int t = 0;
-        double total = 0.0;
+        float total = 0.0;
 
         while (t < 1000)
         {
@@ -277,7 +281,7 @@ struct w_QAgent
             holder h = env.step(action);
 
             vector <int> s_next = h.s;
-            double reward = (double)h.r;
+            float reward = h.r;
             bool done = h.d;
 
             states.push_back(s_next);
@@ -297,39 +301,36 @@ struct w_QAgent
 
 int main()
 {
-    srand(time(NULL) ^ getpid());
     WindyGridworld env;
-    vector <int> pos{3, 6};
+
+    // Modify environment
     vector <int> p{1, 5};
     env.jump_cells.push_back(p);
-    env.special.push_back(pos);
-
     w_QAgent agent(env);
 
     clock_t start = clock();
-    agent.qlearn(5000, true, -1, false);
+    agent.qlearn(3000, true, -1, false);
     clock_t end = clock();
 
     vector <vector <int>> ls = agent.env.resettable_states();
-    vector <double> values;
+    vector <float> values;
 
     for (int i = 0; i < ls.size(); i++)
     {
-        double x = agent.eval(false, ls[i]).first;
+        float x = agent.eval(false, ls[i]).first;
         values.push_back(x);
     }
 
     cout << "Time taken: " << (float)(end - start) / CLOCKS_PER_SEC << endl;
 
-    double sum = 0.0;
+    float sum = 0.0;
     for (int i = 0; i < values.size(); i++)
     {
         sum += values[i];
     }
 
-    cout << (double)sum / values.size() << endl;
-    cout << values.size() << endl;
-    cout << agent.q.size() << endl;
+    cout << (float)sum / values.size() << endl;
+    agent.env.render();
 
     return 0;
 }

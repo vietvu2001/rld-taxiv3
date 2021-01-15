@@ -9,10 +9,10 @@ int randint(int min, int max);
 struct holder
 {
     std::vector <int> s;
-    int r;
+    float r;
     bool d;
 
-    holder(std::vector <int> x, int y, bool z);
+    holder(std::vector <int> x, float y, bool z);
 };
 
 void display_vector(std::vector <int> a);

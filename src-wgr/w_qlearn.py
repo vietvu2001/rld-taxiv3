@@ -186,9 +186,7 @@ if __name__ == "__main__":
     env = WindyGridworld()
 
     modified = copy.deepcopy(env)
-    modified.jump_cells.append((4, 1))
-    modified.jump_cells.append((4, 3))
-    modified.special.append((3, 5))
+    modified.special.append((3, 6))
 
     start = time.time()
     agent = w_QAgent(modified)
