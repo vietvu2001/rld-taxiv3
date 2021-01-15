@@ -441,7 +441,9 @@ class Tree():
 
 
 if __name__ == "__main__":
-    num_iters = 3000
+    max_layer = int(sys.argv[1])
+    num_iters = int(sys.argv[2])
+    
     env = WindyGridworld()
     tree = Tree(env, max_layer)
     tree.initialize()
