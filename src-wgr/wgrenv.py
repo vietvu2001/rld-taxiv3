@@ -16,7 +16,7 @@ class WindyGridworld():
         self.max_row = self.width - 1
         self.max_col = self.length - 1
 
-        self.wind = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.wind = [0, 0, 1, 1, 1, 0, 0, 0]
 
         # Destination: there are now three destinations
         self.dest = [(1, 6), (3, 5), (4, 7)]
