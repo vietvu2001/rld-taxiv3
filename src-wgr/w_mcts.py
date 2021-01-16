@@ -445,7 +445,9 @@ if __name__ == "__main__":
     num_iters = int(sys.argv[2])
 
     env = WindyGridworld()
+    
     tree = Tree(env, max_layer)
+    tree.threshold = float(sys.argv[3])
     tree.initialize()
     tree.ucb_search(iterations=num_iters)
 

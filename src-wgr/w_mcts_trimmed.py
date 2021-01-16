@@ -370,7 +370,10 @@ if __name__ == "__main__":
     num_iters = int(sys.argv[2])
 
     env = WindyGridworld()
+    
     tree = Tree(env, max_layer)
+    chosen_threshold = float(sys.argv[3])
+    tree.threshold = chosen_threshold
     tree.initialize()
     tree.ucb_search(iterations=num_iters)
     r_dir = os.path.abspath(os.pardir)
