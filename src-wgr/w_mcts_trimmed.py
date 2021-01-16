@@ -146,7 +146,7 @@ class Tree():
         self.num_nodes = 0
         self.root = None
         self.max_layer = max_layer
-        self.threshold = 10.12
+        self.threshold = 10.75
 
         # Storing best reward and corresponding environment
         self.max_reward = float("-inf")
