@@ -58,6 +58,4 @@ if __name__ == "__main__":
     count = 0
     for elem in cell_dict:
         if elem[1] == 0:
-            count += 1
-
-    print(count)
+            print(elem[0])
